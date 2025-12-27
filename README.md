@@ -17,6 +17,11 @@
 # 安装依赖（根目录）
 pnpm install
 
+# 数据库迁移
+./databases/scripts/migrate.sh
+# 数据库种子
+./databases/scripts/seed.sh
+
 # 启动后端（NestJS，默认端口 3001）
 pnpm -F @apps/backend dev
 # 访问 http://localhost:3001/
