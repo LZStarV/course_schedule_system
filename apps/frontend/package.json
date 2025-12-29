@@ -13,10 +13,12 @@
     "axios": "^1.13.2",
     "naive-ui": "^2.43.2",
     "pinia": "^3.0.4",
+    "sass": "^1.97.1",
     "vue": "^3.4.0",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@packages/config": "workspace:^",
     "@vitejs/plugin-vue": "^4.5.0",
     "eslint": "^9.7.0",
     "postcss": "^8.4.45",
