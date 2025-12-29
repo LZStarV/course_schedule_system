@@ -1,5 +1,5 @@
 <template>
-  <div class="app-layout">
+  <n-layout class="app-layout">
     <HeaderBar />
     <div class="body">
       <SidebarMenu />
@@ -9,12 +9,13 @@
         </div>
       </main>
     </div>
-  </div>
+  </n-layout>
 </template>
 
 <script setup lang="ts">
 import HeaderBar from '@components/layout/HeaderBar.vue';
 import SidebarMenu from '@components/layout/SidebarMenu.vue';
+import { NLayout } from 'naive-ui';
 import '@styles/global.scss';
 import '@styles/themes/light.scss';
 import '@styles/themes/dark.scss';
