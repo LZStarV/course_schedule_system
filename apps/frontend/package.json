@@ -17,6 +17,8 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@packages/config": "workspace:^",
+    "@packages/shared-types": "workspace:^",
     "@vitejs/plugin-vue": "^4.5.0",
     "eslint": "^9.7.0",
     "postcss": "^8.4.45",
