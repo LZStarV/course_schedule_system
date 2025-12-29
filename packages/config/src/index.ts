@@ -13,9 +13,24 @@ export const devConfig = {
     password: 'password',
     name: 'course_select',
     host: 'localhost',
-    port: 5432,
+    port: 55432,
     ssl: false,
     logging: false,
+  },
+  redis: {
+    host: 'localhost',
+    port: 56379,
+    password: 'dev_redis_password',
+    db: 0,
+  },
+  jwt: {
+    accessSecret: 'dev_access_secret',
+    accessExpiresIn: '2h',
+    refreshSecret: 'dev_refresh_secret',
+    refreshExpiresIn: '7d',
+  },
+  rateLimit: {
+    maxPerMinute: 60,
   },
 };
 
