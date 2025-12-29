@@ -192,6 +192,18 @@ export const EnrollmentSchema = z.object({
 });
 export type Enrollment = z.infer<typeof EnrollmentSchema>;
 
+// 课表项（我的课表分页）
+export const EnrollmentTimetableItemSchema = z.object({
+  course_id: z.string().uuid(),
+  section_id: z.string().uuid().optional().nullable(),
+  weekday: z.number().int().min(1).max(7),
+  start_time: z.string(),
+  end_time: z.string(),
+  location: z.string().optional().nullable(),
+  course: CourseSchema,
+});
+export type EnrollmentTimetableItem = z.infer<typeof EnrollmentTimetableItemSchema>;
+
 // 通用分页结构（前后端统一）
 export const PaginatedSchema = <T extends z.ZodTypeAny>(item: T) =>
   z.object({
@@ -205,31 +217,89 @@ export const PaginatedSchema = <T extends z.ZodTypeAny>(item: T) =>
     meta: z.record(z.any()).optional(),
   });
 
-export interface RpcRequest {
-  id: string;
-  method: string;
-  params: Record<string, unknown>;
-  meta?: { version?: string };
-}
+export const RpcRequestSchema = z.object({
+  id: z.string(),
+  method: z.string(),
+  params: z.record(z.any()),
+  meta: z.object({ version: z.string().optional() }).optional(),
+});
+export type RpcRequest = z.infer<typeof RpcRequestSchema>;
 
-export interface RpcResponse<T> {
-  id: string;
-  code: number;
-  message: string;
-  data: T;
-  timestamp: number;
-}
+export const RpcResponseBaseSchema = z.object({
+  id: z.string(),
+  code: z.number(),
+  message: z.string(),
+  timestamp: z.number(),
+});
+export const RpcResponseSchema = <T extends z.ZodTypeAny>(item: T) =>
+  RpcResponseBaseSchema.extend({ data: item });
+export type RpcResponse<T> = z.infer<typeof RpcResponseBaseSchema> & { data: T };
 
-export interface PaginatedRequest {
-  page?: number;
-  page_size?: number;
-  sort_by?: string;
-  sort_order?: 'asc' | 'desc';
-  filters?: Record<string, unknown>;
-}
+export const PaginatedRequestSchema = z.object({
+  page: z.number().int().optional(),
+  page_size: z.number().int().optional(),
+  sort_by: z.string().optional(),
+  sort_order: z.enum(['asc', 'desc']).optional(),
+  filters: z.record(z.any()).optional(),
+});
+export type PaginatedRequest = z.infer<typeof PaginatedRequestSchema>;
 
 export interface PaginatedResponse<T> {
   data: T[];
   pagination: { page: number; page_size: number; total: number; total_pages: number };
   meta?: { filters_applied?: Record<string, unknown>; permissions?: Record<string, boolean> };
 }
+
+// 成绩录入类型（占位）
+export const GradeEntryItemSchema = z.object({
+  student_id: z.string(),
+  grade: z.enum(['A', 'B', 'C', 'D', 'F', 'P', 'NP']).optional(),
+  score: z.number().optional(),
+});
+export type GradeEntryItem = z.infer<typeof GradeEntryItemSchema>;
+
+export const GradeEntryRequestSchema = z.object({
+  course_id: z.string(),
+  section_id: z.string().optional(),
+  items: z.array(GradeEntryItemSchema),
+});
+export type GradeEntryRequest = z.infer<typeof GradeEntryRequestSchema>;
+
+// 权限与菜单统一类型
+export const ModulePermissionSchema = z.object({
+  id: z.string().uuid().optional(),
+  code: z.string(),
+  name: z.string().optional(),
+  accessible: z.boolean(),
+  operations: z.record(z.boolean()).optional(),
+  children: z.array(z.any()).optional(),
+});
+export type ModulePermission = z.infer<typeof ModulePermissionSchema>;
+
+export const PermissionDataSchema = z.object({
+  modules: z.record(
+    z.object({ accessible: z.boolean(), operations: z.record(z.boolean()).optional() })
+  ),
+  flags: z.record(z.boolean()).optional(),
+  data_scopes: z.record(z.string()).optional(),
+});
+export type PermissionData = z.infer<typeof PermissionDataSchema>;
+
+export const MenuItemSchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  name: z.string(),
+  icon: z.string().optional(),
+  path: z.string().optional(),
+  order: z.number().int(),
+  children: z.array(z.any()).optional(),
+  operations: z.record(z.boolean()).optional(),
+});
+export type MenuItem = z.infer<typeof MenuItemSchema>;
+
+export const MenuDataSchema = z.object({
+  navigation: z.array(MenuItemSchema),
+  sidebar: z.array(MenuItemSchema),
+  shortcuts: z.array(MenuItemSchema).optional(),
+});
+export type MenuData = z.infer<typeof MenuDataSchema>;

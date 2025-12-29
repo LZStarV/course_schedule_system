@@ -9,11 +9,23 @@
     "format": "prettier --write . && stylelint '**/*.{css,scss,vue}' --fix"
   },
   "dependencies": {
-    "vue": "^3.4.0"
+    "@vicons/ionicons5": "^0.13.0",
+    "axios": "^1.13.2",
+    "naive-ui": "^2.43.2",
+    "pinia": "^3.0.4",
+    "vue": "^3.4.0",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
-    "vite": "^4.5.0",
     "@vitejs/plugin-vue": "^4.5.0",
-    "typescript": "^4.9.5"
+    "eslint": "^9.7.0",
+    "postcss": "^8.4.45",
+    "postcss-html": "^1.6.0",
+    "stylelint": "^16.7.0",
+    "stylelint-config-html": "^1.1.0",
+    "stylelint-config-standard": "^36.0.0",
+    "stylelint-config-standard-scss": "^13.0.0",
+    "typescript": "^4.9.5",
+    "vite": "^4.5.0"
   }
 }

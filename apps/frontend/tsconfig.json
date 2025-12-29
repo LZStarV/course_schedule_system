@@ -1,8 +1,18 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "types": ["node"],
-    "jsx": "preserve"
+    "types": ["node", "vite/client"],
+    "jsx": "preserve",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"],
+      "@api/*": ["src/api/*"],
+      "@stores/*": ["src/stores/*"],
+      "@router/*": ["src/router/*"],
+      "@components/*": ["src/components/*"],
+      "@layouts/*": ["src/layouts/*"],
+      "@styles/*": ["src/styles/*"]
+    }
   },
   "include": ["src", "env.d.ts"]
 }

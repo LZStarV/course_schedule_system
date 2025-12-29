@@ -1,0 +1,16 @@
+$primary-color: #18a058;
+$text-color: #333;
+$bg-color: #fff;
+$border-color: #e5e7eb;
+$gap-xs: 4px;
+$gap-sm: 8px;
+$gap-md: 16px;
+$gap-lg: 24px;
+$shadow-sm: 0 1px 2px rgb(0 0 0 / 4%);
+$shadow-md: 0 4px 12px rgb(0 0 0 / 8%);
+$breakpoints: (
+  'sm': 576px,
+  'md': 768px,
+  'lg': 992px,
+  'xl': 1200px,
+);

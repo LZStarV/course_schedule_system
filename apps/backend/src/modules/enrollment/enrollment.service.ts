@@ -35,4 +35,11 @@ export class EnrollmentService {
       throw e;
     }
   }
+
+  async listMy(params: { page?: number; page_size?: number }) {
+    const page = Number(params.page ?? 1);
+    const page_size = Number(params.page_size ?? 20);
+    // 占位返回，待 class_schedules 表补齐后完善
+    return { data: [], pagination: { page, page_size, total: 0, total_pages: 0 } };
+  }
 }

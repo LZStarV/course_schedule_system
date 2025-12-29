@@ -53,12 +53,21 @@ pnpm -F @apps/backend dev
 
 # 启动前端（Vite，默认端口 5173）
 pnpm -F @apps/frontend dev
-# 访问 http://localhost:5173/
 
 # 分项目 Format
 pnpm -F @apps/backend format
 pnpm -F @apps/frontend format
 ```
+
+## 测试账号（开发联调）
+
+- 管理员（SUPER_ADMIN）
+  - 用户名：superadmin
+  - 密码：任意（当前开发阶段不校验密码）
+  - 邮箱：admin@course-select.edu
+  - 说明：登录后具备系统管理权限，权限菜单由 Auth.GetPermissions 返回（包含用户管理、选课规则等）。
+
+提示：当前 AuthService 仅按用户名查找并签发 JWT，不做密码校验；后续启用密码哈希校验后将更新此说明。
 
 ## 工作区结构
 
