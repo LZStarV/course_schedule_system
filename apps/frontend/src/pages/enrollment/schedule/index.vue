@@ -1,14 +1,14 @@
 <template>
-  <div>
+  <n-el type="div">
     <n-alert type="info" title="我的课表">分页展示课表（后端接口补充后切换为真实数据）。</n-alert>
     <n-data-table :columns="columns" :data="rows" :pagination="false" />
     <table-pagination :page="page" :page-size="pageSize" :total="total" @update:page="onPage" />
-  </div>
+  </n-el>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { NAlert, NDataTable } from 'naive-ui';
+import { NAlert, NDataTable, NEl } from 'naive-ui';
 import TablePagination from '@components/common/TablePagination.vue';
 import { listMy } from '@api/modules/enrollment';
 

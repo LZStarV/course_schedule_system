@@ -1,18 +1,18 @@
 <template>
-  <header class="header-bar">
-    <div class="left">研究生排课系统</div>
-    <div class="right">
+  <n-layout-header class="header-bar" bordered>
+    <n-gradient-text type="success">研究生排课系统</n-gradient-text>
+    <n-el type="div" class="right">
       <span v-if="user">{{ user.username }}（{{ user.role }}）</span>
       <n-switch :value="isDark" @update:value="onToggleTheme" />
       <n-button v-if="isAuthenticated" type="error" size="small" @click="logout">退出</n-button>
-    </div>
-  </header>
+    </n-el>
+  </n-layout-header>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '@stores/auth.store';
 import { useAppStore } from '@stores/app.store';
-import { NSwitch, NButton, useMessage } from 'naive-ui';
+import { NSwitch, NButton, NLayoutHeader, NGradientText, NEl, useMessage } from 'naive-ui';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -38,13 +38,18 @@ function logout() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 16px 25px;
 }
 
 .right {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.n-gradient-text {
+  font-size: 20px;
+  font-weight: bold;
+  font-family: sans-serif;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <n-layout style="height: 100%">
-    <div style="max-width: 400px; margin: 80px auto">
+    <n-el type="div" style="max-width: 400px; margin: 80px auto">
       <n-card title="登录">
         <n-form :model="form" :rules="rules">
           <n-form-item label="用户名" path="username">
@@ -14,7 +14,7 @@
           </n-form-item>
         </n-form>
       </n-card>
-    </div>
+    </n-el>
   </n-layout>
 </template>
 
