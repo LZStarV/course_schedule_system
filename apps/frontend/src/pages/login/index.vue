@@ -1,6 +1,6 @@
 <template>
-  <n-layout>
-    <div style="max-width: 400px; margin: 80px auto">
+  <n-layout style="height: 100%">
+    <n-el type="div" style="max-width: 400px; margin: 80px auto">
       <n-card title="登录">
         <n-form :model="form" :rules="rules">
           <n-form-item label="用户名" path="username">
@@ -14,7 +14,7 @@
           </n-form-item>
         </n-form>
       </n-card>
-    </div>
+    </n-el>
   </n-layout>
 </template>
 
@@ -23,7 +23,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@stores/auth.store';
 import { usePermissionStore } from '@stores/permission.store';
-import { NCard, NForm, NFormItem, NInput, NButton, NLayout } from 'naive-ui';
+import { NCard, NForm, NFormItem, NInput, NButton, NLayout, NEl } from 'naive-ui';
 
 const router = useRouter();
 const auth = useAuthStore();

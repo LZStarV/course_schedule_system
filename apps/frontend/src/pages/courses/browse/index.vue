@@ -1,17 +1,17 @@
 <template>
-  <div>
-    <div style="display: flex; gap: 12px; margin-bottom: 12px">
+  <n-el type="div">
+    <n-el type="div" style="display: flex; gap: 12px; margin-bottom: 12px">
       <n-input v-model:value="filters.keyword" placeholder="课程名/教师" style="max-width: 240px" />
       <n-input-number v-model:value="filters.credit" placeholder="学分" :min="0" />
       <n-button type="primary" @click="fetch">搜索</n-button>
-    </div>
+    </n-el>
     <n-data-table :columns="columns" :data="rows" :pagination="pagination" />
-  </div>
+  </n-el>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import { NInput, NInputNumber, NButton, NDataTable } from 'naive-ui';
+import { NInput, NInputNumber, NButton, NDataTable, NEl } from 'naive-ui';
 import { listForStudent } from '@api/modules/course';
 import { columns } from './config/table';
 

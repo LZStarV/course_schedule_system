@@ -1,7 +1,7 @@
 <template>
-  <aside class="sidebar" :class="{ collapsed }">
+  <n-layout-sider class="sidebar" :class="{ collapsed }" bordered style="height: 100%">
     <n-menu :value="activeKey" :options="options" :collapsed="collapsed" @update:value="onSelect" />
-  </aside>
+  </n-layout-sider>
 </template>
 
 <script setup lang="ts">
@@ -9,7 +9,7 @@ import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { usePermissionStore } from '@stores/permission.store';
 import { useAppStore } from '@stores/app.store';
-import { NMenu } from 'naive-ui';
+import { NMenu, NLayoutSider } from 'naive-ui';
 import type { MenuOption } from 'naive-ui';
 import { renderIconFn, iconNameOrError } from '@components/layout/icon-map';
 const router = useRouter();
@@ -37,7 +37,6 @@ function onSelect(key: string) {
 <style scoped>
 .sidebar {
   width: 240px;
-  border-right: 1px solid #e5e7eb;
   padding: 8px;
 }
 

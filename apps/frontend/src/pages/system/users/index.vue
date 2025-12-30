@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div style="display: flex; gap: 12px; margin-bottom: 12px">
+  <n-el type="div">
+    <n-el type="div" style="display: flex; gap: 12px; margin-bottom: 12px">
       <n-input v-model:value="filters.keyword" placeholder="用户名/邮箱" style="max-width: 240px" />
       <n-select
         v-model:value="filters.role"
@@ -18,18 +18,18 @@
       <permission-wrapper module="user_management" operation="create">
         <n-button type="success" @click="openCreate">新增用户</n-button>
       </permission-wrapper>
-    </div>
+    </n-el>
     <n-data-table :columns="columns" :data="rows" :pagination="pagination" />
 
     <n-modal v-model:show="showForm">
       <user-form :model="editing" @submit="onSubmit" @close="showForm = false" />
     </n-modal>
-  </div>
+  </n-el>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import { NInput, NSelect, NButton, NDataTable, NModal, useMessage } from 'naive-ui';
+import { NInput, NSelect, NButton, NDataTable, NModal, useMessage, NEl } from 'naive-ui';
 import PermissionWrapper from '@components/common/PermissionWrapper.vue';
 import UserForm from './components/UserForm/index.vue';
 import { columns } from './config/table';
