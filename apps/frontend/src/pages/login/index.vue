@@ -1,5 +1,5 @@
 <template>
-  <n-layout>
+  <n-layout style="height: 100%">
     <div style="max-width: 400px; margin: 80px auto">
       <n-card title="登录">
         <n-form :model="form" :rules="rules">
@@ -23,11 +23,12 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@stores/auth.store';
 import { usePermissionStore } from '@stores/permission.store';
-import { NCard, NForm, NFormItem, NInput, NButton, NLayout } from 'naive-ui';
+import { NCard, NForm, NFormItem, NInput, NButton, NLayout, useMessage } from 'naive-ui';
 
 const router = useRouter();
 const auth = useAuthStore();
 const perm = usePermissionStore();
+const message = useMessage();
 const loading = ref(false);
 const form = ref({ username: '', password: '' });
 const rules = {
@@ -37,10 +38,16 @@ const rules = {
 
 async function onLogin() {
   loading.value = true;
+  const loadingMessage = message.loading('登录中...', { duration: 0 });
   try {
     const role = await auth.login(form.value.username, form.value.password);
     const target = perm.roleDefaultPath(role);
+    loadingMessage.destroy();
+    message.success('登录成功', { duration: 2000 });
     if (target) router.push(target);
+  } catch (error: any) {
+    loadingMessage.destroy();
+    message.error('登录失败：' + (error.message || '未知错误'), { duration: 3000 });
   } finally {
     loading.value = false;
   }

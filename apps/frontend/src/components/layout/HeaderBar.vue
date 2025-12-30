@@ -12,13 +12,14 @@
 <script setup lang="ts">
 import { useAuthStore } from '@stores/auth.store';
 import { useAppStore } from '@stores/app.store';
-import { NSwitch, NButton } from 'naive-ui';
+import { NSwitch, NButton, useMessage } from 'naive-ui';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const auth = useAuthStore();
 const app = useAppStore();
 const router = useRouter();
+const message = useMessage();
 const user = auth.user;
 const isAuthenticated = auth.isAuthenticated;
 const isDark = computed(() => app.isDark);
@@ -27,6 +28,7 @@ function onToggleTheme() {
 }
 function logout() {
   auth.logout();
+  message.success('已成功退出', { duration: 2000 });
   router.push('/login');
 }
 </script>
