@@ -1,21 +1,21 @@
 <template>
   <n-layout class="app-layout">
     <HeaderBar />
-    <div class="body">
+    <n-el type="div" class="body">
       <SidebarMenu />
       <main class="main">
-        <div class="content-wrapper">
+        <n-el type="div" class="content-wrapper">
           <router-view />
-        </div>
+        </n-el>
       </main>
-    </div>
+    </n-el>
   </n-layout>
 </template>
 
 <script setup lang="ts">
 import HeaderBar from '@components/layout/HeaderBar.vue';
 import SidebarMenu from '@components/layout/SidebarMenu.vue';
-import { NLayout } from 'naive-ui';
+import { NLayout, NEl } from 'naive-ui';
 import '@styles/global.scss';
 import '@styles/themes/light.scss';
 import '@styles/themes/dark.scss';
