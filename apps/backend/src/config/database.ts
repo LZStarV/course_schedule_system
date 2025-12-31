@@ -12,7 +12,9 @@ const config = {
     dialectOptions: {
       ssl: (devConfig as any).database.ssl || false,
     },
-    logging: (devConfig as any).database.logging ? console.log : false,
+    logging: (devConfig as any).database.logging
+      ? console.log
+      : false,
     define: {
       timestamps: true,
       underscored: true,

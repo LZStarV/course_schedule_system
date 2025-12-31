@@ -9,7 +9,14 @@
     "strict": true,
     "skipLibCheck": true,
     "types": [],
-    "typeRoots": ["./node_modules/@types", "../node_modules/@types"]
+    "typeRoots": [
+      "./node_modules/@types",
+      "../node_modules/@types"
+    ]
   },
-  "include": ["migrations/**/*.ts", "seeders/**/*.ts", "types/**/*.d.ts"]
+  "include": [
+    "migrations/**/*.ts",
+    "seeders/**/*.ts",
+    "types/**/*.d.ts"
+  ]
 }

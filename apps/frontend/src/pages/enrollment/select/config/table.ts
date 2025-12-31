@@ -13,7 +13,11 @@ export const columns: DataTableColumns<any> = [
     render: (row: any) =>
       h(
         NButton,
-        { size: 'small', type: 'primary', onClick: row.__action },
+        {
+          size: 'small',
+          type: 'primary',
+          onClick: row.__action,
+        },
         { default: () => '选课' }
       ),
   },

@@ -58,7 +58,7 @@ export default [
           singleQuote: true,
           semi: true,
           trailingComma: 'es5',
-          printWidth: 100,
+          printWidth: 60,
           tabWidth: 2,
           useTabs: false,
           bracketSpacing: true,
@@ -84,14 +84,21 @@ export default [
     files: ['**/*.{ts,tsx,vue}'],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.json', './tsconfig.node.json'],
+        project: [
+          './tsconfig.json',
+          './tsconfig.node.json',
+        ],
         extraFileExtensions: ['.vue'],
       },
     },
     rules: {
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/explicit-module-boundary-types':
+        'off',
     },
   },
   {
@@ -110,7 +117,10 @@ export default [
     languageOptions: {
       parserOptions: {
         parser: '@typescript-eslint/parser',
-        project: ['./tsconfig.json', './tsconfig.node.json'],
+        project: [
+          './tsconfig.json',
+          './tsconfig.node.json',
+        ],
         extraFileExtensions: ['.vue'],
       },
     },

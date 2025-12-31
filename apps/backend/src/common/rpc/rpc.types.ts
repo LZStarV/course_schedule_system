@@ -1,4 +1,9 @@
-import { IsString, IsUUID, IsObject, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsUUID,
+  IsObject,
+  IsOptional,
+} from 'class-validator';
 
 export class RpcRequestDto {
   @IsString()

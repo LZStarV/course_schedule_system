@@ -11,7 +11,8 @@
       "@router/*": ["src/router/*"],
       "@components/*": ["src/components/*"],
       "@layouts/*": ["src/layouts/*"],
-      "@styles/*": ["src/styles/*"]
+      "@styles/*": ["src/styles/*"],
+      "@types/*": ["src/types/*"]
     }
   },
   "include": ["src", "env.d.ts"]

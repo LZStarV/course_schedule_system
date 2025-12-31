@@ -1,34 +1,43 @@
 <template>
-  <n-layout class="app-layout">
-    <HeaderBar />
-    <div class="body">
-      <SidebarMenu />
-      <main class="main">
-        <div class="content-wrapper">
-          <router-view />
-        </div>
-      </main>
-    </div>
-  </n-layout>
+  <div>
+    <n-layout-header style="height: 64px" bordered>
+      <HeaderBar />
+    </n-layout-header>
+    <n-layout
+      position="absolute"
+      style="top: 64px"
+      has-sider
+    >
+      <n-layout-sider
+        collapse-mode="width"
+        :collapsed-width="60"
+        show-trigger="bar"
+        :native-scrollbar="false"
+        bordered
+        v-model:collapsed="isCollapsed"
+      >
+        <SidebarMenu :isCollapsed="isCollapsed" />
+      </n-layout-sider>
+      <n-layout-content
+        content-style="padding: 24px;"
+        :native-scrollbar="false"
+      >
+        <router-view />
+      </n-layout-content>
+    </n-layout>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import HeaderBar from '@components/layout/HeaderBar.vue';
 import SidebarMenu from '@components/layout/SidebarMenu.vue';
-import { NLayout } from 'naive-ui';
-import '@styles/global.scss';
-import '@styles/themes/light.scss';
-import '@styles/themes/dark.scss';
+import {
+  NLayout,
+  NLayoutHeader,
+  NLayoutSider,
+  NLayoutContent,
+} from 'naive-ui';
+
+const isCollapsed = ref(false);
 </script>
-
-<style scoped>
-.body {
-  display: flex;
-  height: calc(100% - 56px);
-}
-
-.main {
-  flex: 1;
-  overflow: auto;
-}
-</style>

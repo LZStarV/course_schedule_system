@@ -34,17 +34,29 @@ export default {
     );
   },
   down: async (queryInterface: QueryInterface) => {
-    await queryInterface.sequelize.query('DROP TRIGGER IF EXISTS update_users_updated_at ON users');
+    await queryInterface.sequelize.query(
+      'DROP TRIGGER IF EXISTS update_users_updated_at ON users'
+    );
     await queryInterface.sequelize.query(
       'DROP TRIGGER IF EXISTS update_courses_updated_at ON courses'
     );
     await queryInterface.sequelize.query(
       'DROP TRIGGER IF EXISTS update_enrollments_updated_at ON enrollments'
     );
-    await queryInterface.sequelize.query('DROP FUNCTION IF EXISTS update_updated_at_column()');
-    await queryInterface.sequelize.query('DROP INDEX IF EXISTS users_real_name_trgm_idx');
-    await queryInterface.sequelize.query('DROP INDEX IF EXISTS courses_name_trgm_idx');
-    await queryInterface.sequelize.query('DROP INDEX IF EXISTS courses_schedule_idx');
-    await queryInterface.sequelize.query('DROP INDEX IF EXISTS courses_restrictions_idx');
+    await queryInterface.sequelize.query(
+      'DROP FUNCTION IF EXISTS update_updated_at_column()'
+    );
+    await queryInterface.sequelize.query(
+      'DROP INDEX IF EXISTS users_real_name_trgm_idx'
+    );
+    await queryInterface.sequelize.query(
+      'DROP INDEX IF EXISTS courses_name_trgm_idx'
+    );
+    await queryInterface.sequelize.query(
+      'DROP INDEX IF EXISTS courses_schedule_idx'
+    );
+    await queryInterface.sequelize.query(
+      'DROP INDEX IF EXISTS courses_restrictions_idx'
+    );
   },
 };

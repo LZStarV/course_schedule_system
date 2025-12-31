@@ -1,8 +1,19 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  ForeignKey,
+  BelongsTo,
+} from 'sequelize-typescript';
 import { Department } from './department.model';
 import { User } from './user.model';
 
-@Table({ tableName: 'courses', timestamps: true, underscored: true })
+@Table({
+  tableName: 'courses',
+  timestamps: true,
+  underscored: true,
+})
 export class Course extends Model<Course> {
   @Column({ type: DataType.UUID, primaryKey: true })
   id!: string;

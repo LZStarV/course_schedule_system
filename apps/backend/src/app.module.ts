@@ -1,4 +1,8 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import {
+  Module,
+  NestModule,
+  MiddlewareConsumer,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { RpcController } from './common/rpc/rpc.controller';
 import { RpcModule } from './common/rpc/rpc.module';
@@ -25,7 +29,9 @@ import { AuthMiddleware } from './common/middleware/auth.middleware';
       synchronize: false,
       define: { underscored: true },
       timezone: '+08:00',
-      logging: devConfig.database.logging ? console.log : false,
+      logging: devConfig.database.logging
+        ? console.log
+        : false,
     }),
     RpcModule,
     AuthModule,
@@ -39,7 +45,11 @@ import { AuthMiddleware } from './common/middleware/auth.middleware';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(LoggerMiddleware, AuthMiddleware, RateLimitMiddleware)
+      .apply(
+        LoggerMiddleware,
+        AuthMiddleware,
+        RateLimitMiddleware
+      )
       .forRoutes(devConfig.backend.rpcPath);
   }
 }
