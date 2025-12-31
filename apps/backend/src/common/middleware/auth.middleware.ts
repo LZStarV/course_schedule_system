@@ -3,7 +3,11 @@ import { Request, Response, NextFunction } from 'express';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  async use(req: Request, res: Response, next: NextFunction) {
+  async use(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     const auth = req.headers['authorization'];
     if (auth && auth.startsWith('Bearer ')) {
       const token = auth.slice(7);

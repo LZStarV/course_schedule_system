@@ -1,30 +1,50 @@
 <template>
-  <n-layout-header class="header-bar" bordered>
-    <n-gradient-text type="success">研究生排课系统</n-gradient-text>
+  <div class="header-bar" bordered>
+    <n-gradient-text type="success"
+      >研究生排课系统</n-gradient-text
+    >
     <n-el type="div" class="right">
-      <span v-if="user">{{ user.username }}（{{ user.role }}）</span>
-      <n-switch :value="isDark" @update:value="onToggleTheme" />
-      <n-button v-if="isAuthenticated" type="error" size="small" @click="logout">退出</n-button>
+      <span v-if="user"
+        >{{ user.username }}（{{ user.role }}）</span
+      >
+      <n-switch
+        :value="isDark"
+        @update:value="onToggleTheme"
+      />
+      <n-button
+        v-if="isAuthenticated"
+        type="error"
+        size="small"
+        @click="logout"
+        >退出</n-button
+      >
     </n-el>
-  </n-layout-header>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '@stores/auth.store';
-import { useAppStore } from '@stores/app.store';
-import { NSwitch, NButton, NLayoutHeader, NGradientText, NEl, useMessage } from 'naive-ui';
+import { useThemeStore } from '@stores/theme.store';
+import {
+  NSwitch,
+  NButton,
+  NLayoutHeader,
+  NGradientText,
+  NEl,
+  useMessage,
+} from 'naive-ui';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const auth = useAuthStore();
-const app = useAppStore();
+const theme = useThemeStore();
 const router = useRouter();
 const message = useMessage();
 const user = auth.user;
 const isAuthenticated = auth.isAuthenticated;
-const isDark = computed(() => app.isDark);
+const isDark = computed(() => theme.isDark);
 function onToggleTheme() {
-  app.toggleThemeAutoAware();
+  theme.toggleThemeAutoAware();
 }
 function logout() {
   auth.logout();

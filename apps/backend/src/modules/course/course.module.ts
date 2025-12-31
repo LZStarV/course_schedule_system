@@ -8,7 +8,10 @@ import { User } from '../../models/user.model';
 import { RpcModule } from '../../common/rpc/rpc.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Course, Department, User]), RpcModule],
+  imports: [
+    SequelizeModule.forFeature([Course, Department, User]),
+    RpcModule,
+  ],
   providers: [CourseService, CourseController],
 })
 export class CourseModule {}

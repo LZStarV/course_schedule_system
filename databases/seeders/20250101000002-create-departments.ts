@@ -79,12 +79,17 @@ export default {
           },
         }
       );
-      await queryInterface.sequelize.query(`UPDATE departments SET path=:path WHERE id=:id`, {
-        replacements: { path: d.id, id: d.id },
-      });
+      await queryInterface.sequelize.query(
+        `UPDATE departments SET path=:path WHERE id=:id`,
+        {
+          replacements: { path: d.id, id: d.id },
+        }
+      );
     }
   },
   down: async (queryInterface: QueryInterface) => {
-    await queryInterface.bulkDelete('departments', { code: ['CS', 'MA', 'PH', 'CH', 'BU'] });
+    await queryInterface.bulkDelete('departments', {
+      code: ['CS', 'MA', 'PH', 'CH', 'BU'],
+    });
   },
 };

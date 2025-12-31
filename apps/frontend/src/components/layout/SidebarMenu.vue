@@ -1,34 +1,48 @@
 <template>
-  <n-layout-sider class="sidebar" :class="{ collapsed }" bordered style="height: 100%">
-    <n-menu :value="activeKey" :options="options" :collapsed="collapsed" @update:value="onSelect" />
-  </n-layout-sider>
+  <div class="sidebar">
+    <n-menu
+      :value="activeKey"
+      :options="options"
+      :collapsed="props.isCollapsed"
+      @update:value="onSelect"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { usePermissionStore } from '@stores/permission.store';
-import { useAppStore } from '@stores/app.store';
-import { NMenu, NLayoutSider } from 'naive-ui';
-import type { MenuOption } from 'naive-ui';
-import { renderIconFn, iconNameOrError } from '@components/layout/icon-map';
+import { NMenu, type MenuOption } from 'naive-ui';
+import {
+  renderIconFn,
+  iconNameOrError,
+} from '@components/layout/icon-map';
+
+const props = defineProps<{ isCollapsed: boolean }>();
 const router = useRouter();
 const route = useRoute();
 const perm = usePermissionStore();
-const app = useAppStore();
-const collapsed = app.sidebarCollapsed;
+
 const options = computed(() => {
   const toOptions = (items: any[]): MenuOption[] =>
     items.map((it: any) => ({
       key: it.path || it.code,
-      label: iconNameOrError(it.icon) === 'error' ? 'error' : it.name,
+      label: props.isCollapsed
+        ? ''
+        : iconNameOrError(it.icon) === 'error'
+          ? 'error'
+          : it.name,
       icon: renderIconFn(it.icon),
-      children: it.children ? toOptions(it.children) : undefined,
+      children: it.children
+        ? toOptions(it.children)
+        : undefined,
     }));
-  const src: any[] = (perm.menus.sidebar as any)?.value ?? [];
+  const src: any[] = (perm as any).sidebar ?? [];
   return toOptions(src);
 });
 const activeKey = computed(() => route.path);
+
 function onSelect(key: string) {
   if (key) router.push(key);
 }
@@ -36,11 +50,7 @@ function onSelect(key: string) {
 
 <style scoped>
 .sidebar {
-  width: 240px;
+  width: 100%;
   padding: 8px;
-}
-
-.sidebar.collapsed {
-  width: 64px;
 }
 </style>

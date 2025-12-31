@@ -1,16 +1,27 @@
 <template>
   <n-layout style="height: 100%">
-    <n-el type="div" style="max-width: 400px; margin: 80px auto">
+    <n-el
+      type="div"
+      style="max-width: 400px; margin: 80px auto"
+    >
       <n-card title="登录">
         <n-form :model="form" :rules="rules">
           <n-form-item label="用户名" path="username">
             <n-input v-model:value="form.username" />
           </n-form-item>
           <n-form-item label="密码" path="password">
-            <n-input v-model:value="form.password" type="password" />
+            <n-input
+              v-model:value="form.password"
+              type="password"
+            />
           </n-form-item>
           <n-form-item>
-            <n-button type="primary" :loading="loading" @click="onLogin">登录</n-button>
+            <n-button
+              type="primary"
+              :loading="loading"
+              @click="onLogin"
+              >登录</n-button
+            >
           </n-form-item>
         </n-form>
       </n-card>
@@ -23,7 +34,16 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@stores/auth.store';
 import { usePermissionStore } from '@stores/permission.store';
-import { NCard, NForm, NFormItem, NInput, NButton, NLayout, useMessage } from 'naive-ui';
+import {
+  NCard,
+  NForm,
+  NFormItem,
+  NInput,
+  NButton,
+  NLayout,
+  NEl,
+  useMessage,
+} from 'naive-ui';
 
 const router = useRouter();
 const auth = useAuthStore();
@@ -38,16 +58,24 @@ const rules = {
 
 async function onLogin() {
   loading.value = true;
-  const loadingMessage = message.loading('登录中...', { duration: 0 });
+  const loadingMessage = message.loading('登录中...', {
+    duration: 0,
+  });
   try {
-    const role = await auth.login(form.value.username, form.value.password);
+    const role = await auth.login(
+      form.value.username,
+      form.value.password
+    );
     const target = perm.roleDefaultPath(role);
     loadingMessage.destroy();
     message.success('登录成功', { duration: 2000 });
     if (target) router.push(target);
   } catch (error: any) {
     loadingMessage.destroy();
-    message.error('登录失败：' + (error.message || '未知错误'), { duration: 3000 });
+    message.error(
+      '登录失败：' + (error.message || '未知错误'),
+      { duration: 3000 }
+    );
   } finally {
     loading.value = false;
   }

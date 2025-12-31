@@ -11,7 +11,9 @@
     "baseUrl": ".",
     "paths": {
       "@shared-types/*": ["packages/shared-types/src/*"],
-      "@runtime-validation/*": ["packages/runtime-validation/src/*"],
+      "@runtime-validation/*": [
+        "packages/runtime-validation/src/*"
+      ],
       "@utils/*": ["packages/utils/src/*"]
     }
   }

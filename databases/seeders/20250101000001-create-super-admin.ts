@@ -56,6 +56,8 @@ export default {
     );
   },
   down: async (queryInterface: QueryInterface) => {
-    await queryInterface.bulkDelete('users', { username: 'superadmin' });
+    await queryInterface.bulkDelete('users', {
+      username: 'superadmin',
+    });
   },
 };

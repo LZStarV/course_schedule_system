@@ -5,7 +5,11 @@ export function createLogger(service: string) {
     level: 'info',
     transport: {
       target: 'pino-pretty',
-      options: { colorize: true, translateTime: 'SYS:standard', singleLine: true },
+      options: {
+        colorize: true,
+        translateTime: 'SYS:standard',
+        singleLine: true,
+      },
     },
   };
   const base = pino(opts);
