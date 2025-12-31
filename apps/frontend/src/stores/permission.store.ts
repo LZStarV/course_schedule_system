@@ -60,6 +60,7 @@ export const usePermissionStore = defineStore(
 
     // 检查路径是否对当前角色可见
     function isPathAllowed(path: string): boolean {
+      if (path === '/') return true;
       const stack: MenuItem[] = [...sidebar.value];
       while (stack.length) {
         const it = stack.pop()!;

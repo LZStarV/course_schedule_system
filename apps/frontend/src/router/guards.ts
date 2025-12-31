@@ -12,17 +12,6 @@ export function setupGuards(router: Router) {
       next('/login');
       return;
     }
-    const roleAllowed =
-      !to.meta?.roles ||
-      (auth.user?.role &&
-        (to.meta.roles as string[]).includes(
-          auth.user.role
-        ));
-    if (requiresAuth && !roleAllowed) {
-      const fallback = perm.roleDefaultPath();
-      next(fallback || '/');
-      return;
-    }
     const allowed = perm.isPathAllowed(to.path);
     if (requiresAuth && !allowed) {
       const fallback = perm.roleDefaultPath();
