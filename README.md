@@ -45,6 +45,9 @@ pnpm install
 ./databases/scripts/init_macos.sh
 # Linux
 ./databases/scripts/init_linux.sh
+# Windows
+./databases/scripts/init_windows.bat
+
 
 # 启动后端（NestJS，默认端口 3001）
 pnpm -F @apps/backend dev
