@@ -3,8 +3,17 @@
     <n-alert type="info" title="我的课程"
       >分页展示教师课程列表（后端接口补充后切换为真实数据）。</n-alert
     >
-    <n-data-table :columns="columns" :data="rows" :pagination="false" />
-    <table-pagination :page="page" :page-size="pageSize" :total="total" @update:page="onPage" />
+    <n-data-table
+      :columns="columns"
+      :data="rows"
+      :pagination="false"
+    />
+    <table-pagination
+      :page="page"
+      :page-size="pageSize"
+      :total="total"
+      @update:page="onPage"
+    />
   </n-el>
 </template>
 

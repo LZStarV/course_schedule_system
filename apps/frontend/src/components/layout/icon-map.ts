@@ -25,7 +25,8 @@ const map: Record<string, any> = {
 export function renderIconFn(name?: string) {
   const IconComp = name ? map[name] : null;
   if (!IconComp) return undefined;
-  return () => h(NIcon, null, { default: () => h(IconComp) });
+  return () =>
+    h(NIcon, null, { default: () => h(IconComp) });
 }
 
 export function iconNameOrError(name?: string) {

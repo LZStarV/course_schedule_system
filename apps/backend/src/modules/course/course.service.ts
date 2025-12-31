@@ -10,9 +10,12 @@ import { logger } from '../../common/logger';
 @Injectable()
 export class CourseService {
   constructor(
-    @InjectModel(Course) private readonly courseModel: typeof Course,
-    @InjectModel(Department) private readonly deptModel: typeof Department,
-    @InjectModel(User) private readonly userModel: typeof User
+    @InjectModel(Course)
+    private readonly courseModel: typeof Course,
+    @InjectModel(Department)
+    private readonly deptModel: typeof Department,
+    @InjectModel(User)
+    private readonly userModel: typeof User
   ) {}
 
   async listForStudent(params: Record<string, unknown>) {
@@ -27,7 +30,9 @@ export class CourseService {
     logger.info({ cache: 'miss', key });
     const where: any = {};
     if (params['keyword']) {
-      where.name = { [Op.iLike]: `%${String(params['keyword'])}%` };
+      where.name = {
+        [Op.iLike]: `%${String(params['keyword'])}%`,
+      };
     }
     if (params['credit']) {
       where.credit = Number(params['credit']);
@@ -49,16 +54,25 @@ export class CourseService {
     }
 
     const offset = (page - 1) * page_size;
-    const { rows, count } = await this.courseModel.findAndCountAll({
-      where,
-      include: [
-        { model: Department, as: 'department', attributes: ['id', 'name'] },
-        { model: User, as: 'teacher', attributes: ['id', 'username'] },
-      ],
-      order: [['published_at', 'DESC']],
-      offset,
-      limit: page_size,
-    });
+    const { rows, count } =
+      await this.courseModel.findAndCountAll({
+        where,
+        include: [
+          {
+            model: Department,
+            as: 'department',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: User,
+            as: 'teacher',
+            attributes: ['id', 'username'],
+          },
+        ],
+        order: [['published_at', 'DESC']],
+        offset,
+        limit: page_size,
+      });
 
     const data = rows.map((c: Course) => ({
       id: c.id,
@@ -77,7 +91,10 @@ export class CourseService {
       min_quota: c.min_quota ?? 1,
       enrolled_count: c.enrolled_count,
       status: c.status,
-      schedule: c.schedule ?? { weekly: [], specific_dates: [] },
+      schedule: c.schedule ?? {
+        weekly: [],
+        specific_dates: [],
+      },
       location_type: c.location_type,
       location_details: c.location_details ?? null,
       description: c.description ?? null,
@@ -93,16 +110,30 @@ export class CourseService {
       reviewed_at: c.reviewed_at?.toISOString?.() ?? null,
       reviewed_by: c.reviewed_by ?? null,
       published_at: c.published_at?.toISOString?.() ?? null,
-      created_at: c.createdAt?.toISOString?.() ?? new Date().toISOString(),
-      updated_at: c.updatedAt?.toISOString?.() ?? new Date().toISOString(),
+      created_at:
+        c.createdAt?.toISOString?.() ??
+        new Date().toISOString(),
+      updated_at:
+        c.updatedAt?.toISOString?.() ??
+        new Date().toISOString(),
     }));
 
     const result = {
       data,
-      pagination: { page, page_size, total: count, total_pages: Math.ceil(count / page_size) },
+      pagination: {
+        page,
+        page_size,
+        total: count,
+        total_pages: Math.ceil(count / page_size),
+      },
     };
     logger.info({ page, page_size, total: count });
-    await redisClient.set(key, JSON.stringify(result), 'EX', 300);
+    await redisClient.set(
+      key,
+      JSON.stringify(result),
+      'EX',
+      300
+    );
     return result;
   }
 
@@ -126,24 +157,35 @@ export class CourseService {
       where.name = { [Op.iLike]: `%${params.keyword}%` };
     }
     if (params.credit) where.credit = Number(params.credit);
-    if (params.status && params.status.length) where.status = params.status;
-    if (params.academic_year) where.academic_year = params.academic_year;
+    if (params.status && params.status.length)
+      where.status = params.status;
+    if (params.academic_year)
+      where.academic_year = params.academic_year;
     if (params.semester) where.semester = params.semester;
 
     // 权限：若用户为教师且查询他人 teacher_id，可后续限制；管理员不限制
     // 目前先放行，后续可根据 (context?.user?.role) 加强校验
 
     const offset = (page - 1) * page_size;
-    const { rows, count } = await this.courseModel.findAndCountAll({
-      where,
-      include: [
-        { model: Department, as: 'department', attributes: ['id', 'name'] },
-        { model: User, as: 'teacher', attributes: ['id', 'username'] },
-      ],
-      order: [['updated_at', 'DESC']],
-      offset,
-      limit: page_size,
-    });
+    const { rows, count } =
+      await this.courseModel.findAndCountAll({
+        where,
+        include: [
+          {
+            model: Department,
+            as: 'department',
+            attributes: ['id', 'name'],
+          },
+          {
+            model: User,
+            as: 'teacher',
+            attributes: ['id', 'username'],
+          },
+        ],
+        order: [['updated_at', 'DESC']],
+        offset,
+        limit: page_size,
+      });
 
     const data = rows.map((c: Course) => ({
       id: c.id,
@@ -162,7 +204,10 @@ export class CourseService {
       min_quota: c.min_quota ?? 1,
       enrolled_count: c.enrolled_count,
       status: c.status,
-      schedule: c.schedule ?? { weekly: [], specific_dates: [] },
+      schedule: c.schedule ?? {
+        weekly: [],
+        specific_dates: [],
+      },
       location_type: c.location_type,
       location_details: c.location_details ?? null,
       description: c.description ?? null,
@@ -178,13 +223,22 @@ export class CourseService {
       reviewed_at: c.reviewed_at?.toISOString?.() ?? null,
       reviewed_by: c.reviewed_by ?? null,
       published_at: c.published_at?.toISOString?.() ?? null,
-      created_at: c.createdAt?.toISOString?.() ?? new Date().toISOString(),
-      updated_at: c.updatedAt?.toISOString?.() ?? new Date().toISOString(),
+      created_at:
+        c.createdAt?.toISOString?.() ??
+        new Date().toISOString(),
+      updated_at:
+        c.updatedAt?.toISOString?.() ??
+        new Date().toISOString(),
     }));
 
     return {
       data,
-      pagination: { page, page_size, total: count, total_pages: Math.ceil(count / page_size) },
+      pagination: {
+        page,
+        page_size,
+        total: count,
+        total_pages: Math.ceil(count / page_size),
+      },
     };
   }
 }

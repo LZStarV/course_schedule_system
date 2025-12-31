@@ -157,7 +157,8 @@ export default {
       enrolled_count: x.enrolled_count,
       status: x.status as Course['status'],
       schedule: x.schedule,
-      location_type: x.location_type as Course['location_type'],
+      location_type:
+        x.location_type as Course['location_type'],
       location_details: x.location_details as any,
       description: x.description ?? null,
       objectives: x.objectives ?? null,
@@ -210,7 +211,9 @@ export default {
             status: c.status,
             schedule: JSON.stringify(c.schedule),
             location_type: c.location_type,
-            location_details: JSON.stringify(c.location_details),
+            location_details: JSON.stringify(
+              c.location_details
+            ),
             description: c.description,
             objectives: c.objectives,
             syllabus: c.syllabus,
@@ -232,6 +235,8 @@ export default {
     }
   },
   down: async (queryInterface: QueryInterface) => {
-    await queryInterface.bulkDelete('courses', { course_code: ['CS101', 'CS201', 'CS301'] });
+    await queryInterface.bulkDelete('courses', {
+      course_code: ['CS101', 'CS201', 'CS301'],
+    });
   },
 };

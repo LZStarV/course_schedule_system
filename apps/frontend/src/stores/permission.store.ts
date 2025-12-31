@@ -1,148 +1,98 @@
 import { defineStore } from 'pinia';
+import { UserRole } from '@/types/role';
 import { ref } from 'vue';
+import { getSidebarByRole } from '@/config/permissions';
 
+/**
+ * 侧边栏菜单项类型
+ * 用于描述导航菜单中每个节点的结构与权限信息
+ */
 type MenuItem = {
+  /** 唯一标识，用于定位与权限校验 */
   id: string;
+  /** 功能编码，对应后端权限系统中的资源 code */
   code: string;
+  /** 菜单显示名称 */
   name: string;
+  /** 图标名称（可选），与图标库中的名称对应 */
   icon?: string;
+  /** 路由路径（可选），点击菜单时跳转的地址 */
   path?: string;
-  order: number;
+  /** 子菜单列表（可选），支持多级嵌套 */
   children?: MenuItem[];
+  /** 按钮级权限映射（可选），key 为操作编码，value 为是否可见/可用 */
   operations?: Record<string, boolean>;
 };
 
-export const usePermissionStore = defineStore('permission', () => {
-  const modules = ref<
-    Record<string, { accessible: boolean; operations?: Record<string, boolean> }>
-  >({});
-  const sidebar = ref<MenuItem[]>([]);
-  const nav = ref<MenuItem[]>([]);
+export const usePermissionStore = defineStore(
+  'permission',
+  () => {
+    // 侧边栏菜单选项，根据用户角色动态生成
+    const sidebar = ref<MenuItem[]>([]);
+    // 当前用户角色，默认值为 'STUDENT'
+    const role = ref<UserRole>(UserRole.STUDENT);
 
-  function initialize(role: string) {
-    if (role === 'STUDENT') {
-      sidebar.value = [
-        {
-          id: 'enrollment',
-          code: 'enrollment',
-          name: '选课管理',
-          icon: 'checklist',
-          order: 1,
-          children: [
-            {
-              id: 'enrollment_select',
-              code: 'course_selection',
-              name: '选课操作',
-              icon: 'check',
-              path: '/enrollment/select',
-              order: 1,
-            },
-            {
-              id: 'my_schedule',
-              code: 'my_schedule',
-              name: '我的课表',
-              icon: 'calendar',
-              path: '/enrollment/schedule',
-              order: 2,
-            },
-          ],
-        },
-      ];
-      modules.value['enrollment'] = { accessible: true };
-      modules.value['course_selection'] = {
-        accessible: true,
-        operations: { view: true, create: true },
-      };
-    } else if (role === 'TEACHER') {
-      sidebar.value = [
-        {
-          id: 'courses',
-          code: 'course_center',
-          name: '课程中心',
-          icon: 'book',
-          order: 1,
-          children: [
-            {
-              id: 'manage_my',
-              code: 'my_courses',
-              name: '我的课程',
-              icon: 'book',
-              path: '/courses/manage/my',
-              order: 1,
-            },
-            {
-              id: 'grade_entry',
-              code: 'grade_entry',
-              name: '成绩录入',
-              icon: 'edit_note',
-              path: '/grades/entry',
-              order: 2,
-            },
-          ],
-        },
-      ];
-      modules.value['course_center'] = { accessible: true };
-      modules.value['my_courses'] = { accessible: true, operations: { view: true, edit: true } };
-    } else {
-      sidebar.value = [
-        {
-          id: 'system',
-          code: 'system',
-          name: '系统管理',
-          icon: 'settings',
-          order: 1,
-          children: [
-            {
-              id: 'users',
-              code: 'user_management',
-              name: '用户管理',
-              icon: 'people',
-              path: '/system/users',
-              order: 1,
-            },
-          ],
-        },
-      ];
-      modules.value['system'] = { accessible: true };
-      modules.value['user_management'] = {
-        accessible: true,
-        operations: { view: true, create: true, edit: true, delete: true },
-      };
+    /**
+     * 根据用户角色获取侧边栏菜单选项
+     * @param r 用户角色，默认值为 'STUDENT'
+     */
+    function getMenu(r: UserRole) {
+      role.value = r || UserRole.STUDENT;
+      sidebar.value = getSidebarByRole(role.value) as any;
     }
-  }
 
-  function hasPermission(moduleCode: string, operation?: string) {
-    const m = modules.value[moduleCode];
-    if (!m || !m.accessible) return false;
-    if (!operation) return true;
-    return !!m.operations?.[operation];
-  }
+    /**
+     * 根据当前角色获取默认跳转路径
+     * 用于未指定目标路径时的默认跳转
+     */
+    function roleDefaultPath(): string {
+      const flatten = (items: MenuItem[]): string[] =>
+        items.flatMap(it =>
+          it.children?.length
+            ? flatten(it.children)
+            : it.path
+              ? [it.path]
+              : []
+        );
+      const paths = flatten(sidebar.value);
+      return paths[0] || '/';
+    }
 
-  function roleDefaultPath(role?: string | null) {
-    if (role === 'STUDENT') return '/enrollment/select';
-    if (role === 'TEACHER') return '/courses/manage/my';
-    if (role === 'ADMIN' || role === 'SUPER_ADMIN') return '/system/users';
-    return '/';
-  }
+    // 检查路径是否对当前角色可见
+    function isPathAllowed(path: string): boolean {
+      const stack: MenuItem[] = [...sidebar.value];
+      while (stack.length) {
+        const it = stack.pop()!;
+        if (it.path === path) return true;
+        if (it.children?.length) stack.push(...it.children);
+      }
+      return false;
+    }
 
-  function setFromRpc(payload: {
-    menus: { sidebar: MenuItem[]; navigation?: MenuItem[]; shortcuts?: MenuItem[] };
-    permissions:
-      | Record<string, { accessible: boolean; operations?: Record<string, boolean> }>
-      | { modules: Record<string, { accessible: boolean; operations?: Record<string, boolean> }> };
-  }) {
-    const perms = (payload.permissions as any).modules || payload.permissions;
-    modules.value = perms;
-    sidebar.value = payload.menus.sidebar || [];
-    nav.value = payload.menus.navigation || [];
-  }
+    // 检查模块操作是否对当前角色可见
+    function can(
+      moduleCode: string,
+      operation?: string
+    ): boolean {
+      const stack: MenuItem[] = [...sidebar.value];
+      while (stack.length) {
+        const it = stack.pop()!;
+        if (it.code === moduleCode) {
+          if (!operation) return true;
+          return !!it.operations?.[operation];
+        }
+        if (it.children?.length) stack.push(...it.children);
+      }
+      return false;
+    }
 
-  return {
-    modules,
-    menus: { sidebar, navigation: nav },
-    initialize,
-    hasPermission,
-    roleDefaultPath,
-    setFromRpc,
-  };
-});
+    return {
+      role,
+      sidebar,
+      getMenu,
+      roleDefaultPath,
+      isPathAllowed,
+      can,
+    };
+  }
+);

@@ -6,7 +6,10 @@ import { Enrollment } from '../../models/enrollment.model';
 import { RpcModule } from '../../common/rpc/rpc.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Enrollment]), RpcModule],
+  imports: [
+    SequelizeModule.forFeature([Enrollment]),
+    RpcModule,
+  ],
   providers: [EnrollmentService, EnrollmentController],
 })
 export class EnrollmentModule {}

@@ -1,6 +1,15 @@
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  DataType,
+} from 'sequelize-typescript';
 
-@Table({ tableName: 'enrollments', timestamps: true, underscored: true })
+@Table({
+  tableName: 'enrollments',
+  timestamps: true,
+  underscored: true,
+})
 export class Enrollment extends Model<Enrollment> {
   @Column({ type: DataType.UUID, primaryKey: true })
   id!: string;

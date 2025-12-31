@@ -1,20 +1,31 @@
 import type { Router } from 'vue-router';
-import { useAuthStore } from '../stores/auth.store';
-import { usePermissionStore } from '../stores/permission.store';
+import { useAuthStore } from '@stores/auth.store';
+import { usePermissionStore } from '@stores/permission.store';
 
 export function setupGuards(router: Router) {
   router.beforeEach((to, from, next) => {
     const auth = useAuthStore();
     const perm = usePermissionStore();
+    auth.init();
     const requiresAuth = to.meta?.requiresAuth === true;
     if (requiresAuth && !auth.isAuthenticated) {
       next('/login');
       return;
     }
-    const moduleCode = to.meta?.moduleCode as string | undefined;
-    const operation = to.meta?.operation as string | undefined;
-    if (moduleCode && !perm.hasPermission(moduleCode, operation)) {
-      const fallback = perm.roleDefaultPath(auth.user?.role);
+    const roleAllowed =
+      !to.meta?.roles ||
+      (auth.user?.role &&
+        (to.meta.roles as string[]).includes(
+          auth.user.role
+        ));
+    if (requiresAuth && !roleAllowed) {
+      const fallback = perm.roleDefaultPath();
+      next(fallback || '/');
+      return;
+    }
+    const allowed = perm.isPathAllowed(to.path);
+    if (requiresAuth && !allowed) {
+      const fallback = perm.roleDefaultPath();
       next(fallback || '/');
       return;
     }

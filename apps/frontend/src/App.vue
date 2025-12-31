@@ -1,8 +1,10 @@
 <template>
-  <n-config-provider :theme="naiveTheme" style="height: 100%">
+  <n-config-provider :theme="naiveTheme">
     <n-message-provider>
       <n-dialog-provider>
-        <router-view />
+        <n-layout style="height: 100vh">
+          <router-view />
+        </n-layout>
       </n-dialog-provider>
     </n-message-provider>
   </n-config-provider>
@@ -10,8 +12,27 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { NConfigProvider, NMessageProvider, NDialogProvider, darkTheme } from 'naive-ui';
-import { useAppStore } from '@stores/app.store';
-const app = useAppStore();
-const naiveTheme = computed(() => (app.isDark ? darkTheme : null));
+import {
+  NConfigProvider,
+  NMessageProvider,
+  NDialogProvider,
+  darkTheme,
+  NLayout,
+} from 'naive-ui';
+import { useThemeStore } from '@stores/theme.store';
+const theme = useThemeStore();
+const naiveTheme = computed(() =>
+  theme.isDark ? darkTheme : null
+);
 </script>
+
+<style lang="scss">
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+</style>

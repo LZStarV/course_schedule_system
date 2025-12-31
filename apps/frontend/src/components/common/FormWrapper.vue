@@ -2,7 +2,9 @@
   <form @submit.prevent="onSubmit">
     <slot />
     <div>
-      <button type="submit" :disabled="loading">提交</button>
+      <button type="submit" :disabled="loading">
+        提交
+      </button>
     </div>
   </form>
 </template>

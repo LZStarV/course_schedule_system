@@ -29,6 +29,8 @@ export default {
     );
   },
   down: async (queryInterface: QueryInterface) => {
-    await queryInterface.bulkDelete('system_configs', { config_key: 'system_roles' });
+    await queryInterface.bulkDelete('system_configs', {
+      config_key: 'system_roles',
+    });
   },
 };

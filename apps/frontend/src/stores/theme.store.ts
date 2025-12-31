@@ -1,14 +1,16 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 
-export const useAppStore = defineStore('app', () => {
-  const theme = ref<'auto' | 'light' | 'dark'>((localStorage.getItem('theme') as any) || 'auto');
-  const sidebarCollapsed = ref(false);
-  const locale = ref('zh-CN');
-
+export const useThemeStore = defineStore('theme', () => {
+  const theme = ref<'auto' | 'light' | 'dark'>(
+    (localStorage.getItem('theme') as any) || 'auto'
+  );
   const isDark = computed(() => {
     if (theme.value === 'auto')
-      return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+      return (
+        window.matchMedia?.('(prefers-color-scheme: dark)')
+          .matches ?? false
+      );
     return theme.value === 'dark';
   });
 
@@ -19,7 +21,8 @@ export const useAppStore = defineStore('app', () => {
   }
 
   function toggleTheme() {
-    theme.value = theme.value === 'light' ? 'dark' : 'light';
+    theme.value =
+      theme.value === 'light' ? 'dark' : 'light';
     localStorage.setItem('theme', theme.value);
     applyRootClass();
   }
@@ -31,25 +34,12 @@ export const useAppStore = defineStore('app', () => {
     applyRootClass();
   }
 
-  function toggleSidebar() {
-    sidebarCollapsed.value = !sidebarCollapsed.value;
-  }
-
-  function setLocale(l: string) {
-    locale.value = l;
-  }
-
-  // 初始应用一次
   applyRootClass();
 
   return {
     theme,
     isDark,
-    sidebarCollapsed,
-    locale,
     toggleTheme,
     toggleThemeAutoAware,
-    toggleSidebar,
-    setLocale,
   };
 });

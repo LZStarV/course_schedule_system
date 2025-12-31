@@ -6,9 +6,15 @@ import { logger } from '../../common/logger';
 
 @Injectable()
 export class AdminService {
-  constructor(@InjectConnection() private readonly sequelize: Sequelize) {}
+  constructor(
+    @InjectConnection()
+    private readonly sequelize: Sequelize
+  ) {}
 
-  async setSelectTime(params: { startTime: string; endTime: string }) {
+  async setSelectTime(params: {
+    startTime: string;
+    endTime: string;
+  }) {
     const value = `${params.startTime}~${params.endTime}`;
     logger.info({ selectTime: value });
     await redisClient.set('select:time_window', value);
@@ -45,10 +51,18 @@ export class AdminService {
       where.push('status = :status');
       replacements.status = params.status;
     }
-    const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
+    const whereSql = where.length
+      ? `WHERE ${where.join(' AND ')}`
+      : '';
     const [rows] = await this.sequelize.query(
       `SELECT id, username, email, role, status, created_at FROM users ${whereSql} ORDER BY created_at DESC LIMIT :limit OFFSET :offset`,
-      { replacements: { ...replacements, limit: page_size, offset } }
+      {
+        replacements: {
+          ...replacements,
+          limit: page_size,
+          offset,
+        },
+      }
     );
     const [[{ count }]]: any = await this.sequelize.query(
       `SELECT COUNT(1) AS count FROM users ${whereSql}`,
@@ -73,9 +87,16 @@ export class AdminService {
     password: string;
   }) {
     const id =
-      (await this.sequelize.query(`SELECT uuid_generate_v4() AS id`))[0]?.[0]?.id || undefined;
+      (
+        await this.sequelize.query(
+          `SELECT uuid_generate_v4() AS id`
+        )
+      )[0]?.[0]?.id || undefined;
     const crypto = await import('node:crypto');
-    const hash = crypto.createHash('sha256').update(payload.password).digest('hex');
+    const hash = crypto
+      .createHash('sha256')
+      .update(payload.password)
+      .digest('hex');
     await this.sequelize.query(
       `INSERT INTO users (id, username, email, role, status, password_hash, created_at, updated_at)
        VALUES (:id, :username, :email, :role, :status, :password_hash, NOW(), NOW())`,
@@ -101,7 +122,9 @@ export class AdminService {
     password?: string;
   }) {
     const sets: string[] = [];
-    const replacements: Record<string, unknown> = { id: payload.id };
+    const replacements: Record<string, unknown> = {
+      id: payload.id,
+    };
     if (payload.email) {
       sets.push('email = :email');
       replacements.email = payload.email;
