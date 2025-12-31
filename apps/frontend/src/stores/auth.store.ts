@@ -3,6 +3,14 @@ import { ref, computed } from 'vue';
 import { login as rpcLogin } from '@api/modules/auth';
 import { useUserStore } from '@stores/user.store';
 import { usePermissionStore } from '@stores/permission.store';
+import { UserRole } from '@/types/role';
+
+// 认证用户类型定义
+type AuthUser = {
+  id: string;
+  username: string;
+  role: UserRole;
+};
 
 export const useAuthStore = defineStore('auth', () => {
   const userStore = useUserStore();
@@ -15,11 +23,7 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.getItem('refresh_token') || ''
   );
   // 用户信息
-  const user = ref<{
-    id: string;
-    username: string;
-    role: 'STUDENT' | 'TEACHER' | 'ADMIN' | 'SUPER_ADMIN';
-  } | null>(null);
+  const user = ref<AuthUser | null>(null);
   // 是否认证
   const isAuthenticated = computed(() => !!token.value);
   // 是否初始化完成
@@ -29,10 +33,28 @@ export const useAuthStore = defineStore('auth', () => {
   function init() {
     if (initialized.value) return;
     const user_info = localStorage.getItem('user_info');
-    if (user_info) user.value = JSON.parse(user_info);
+    if (user_info) {
+      const parsed = JSON.parse(user_info) as {
+        id: string;
+        username: string;
+        role: UserRole;
+      };
+      const roleEnum = UserRole[parsed.role] as
+        | UserRole
+        | undefined;
+      user.value = {
+        id: parsed.id,
+        username: parsed.username,
+        role: roleEnum ?? UserRole.STUDENT,
+      };
+    }
     if (user.value) {
       permStore.getMenu(user.value.role);
-      userStore.setUser(user.value);
+      userStore.setUser({
+        id: user.value.id,
+        username: user.value.username,
+        role: user.value.role,
+      });
     }
     initialized.value = true;
   }
@@ -47,14 +69,25 @@ export const useAuthStore = defineStore('auth', () => {
       'refresh_token',
       refreshToken.value
     );
-    user.value = res.user;
-    userStore.setUser(user.value);
+    const roleEnum = UserRole[res.user.role] as
+      | UserRole
+      | undefined;
+    user.value = {
+      id: res.user.id,
+      username: res.user.username,
+      role: roleEnum ?? UserRole.STUDENT,
+    };
+    userStore.setUser({
+      id: user.value.id,
+      username: user.value.username,
+      role: user.value.role,
+    });
     localStorage.setItem(
       'user_info',
       JSON.stringify(user.value)
     );
-    permStore.getMenu(user.value.role);
-    return user.value.role;
+    permStore.getMenu(user.value!.role);
+    return user.value!.role;
   }
 
   // 注销认证

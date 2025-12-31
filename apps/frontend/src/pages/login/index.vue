@@ -58,15 +58,13 @@ const rules = {
 
 async function onLogin() {
   loading.value = true;
-  const loadingMessage = message.loading('登录中...', {
-    duration: 0,
-  });
+  const loadingMessage = message.loading('登录中...');
   try {
-    const role = await auth.login(
+    await auth.login(
       form.value.username,
       form.value.password
     );
-    const target = perm.roleDefaultPath(role);
+    const target = perm.roleDefaultPath();
     loadingMessage.destroy();
     message.success('登录成功', { duration: 2000 });
     if (target) router.push(target);

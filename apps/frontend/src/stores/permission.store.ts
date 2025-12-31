@@ -27,7 +27,9 @@ type MenuItem = {
 export const usePermissionStore = defineStore(
   'permission',
   () => {
+    // 侧边栏菜单选项，根据用户角色动态生成
     const sidebar = ref<MenuItem[]>([]);
+    // 当前用户角色，默认值为 'STUDENT'
     const role = ref<UserRole>(UserRole.STUDENT);
 
     /**
