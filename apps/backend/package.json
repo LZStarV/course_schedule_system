@@ -7,9 +7,17 @@
     "dev": "nodemon --exec tsx src/main.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/main.js",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "seed:dev": "tsx src/db/scripts/commands/db-seed.ts",
+    "seed:bulk": "tsx src/db/scripts/commands/db-seed-bulk.ts",
+    "migrate:dev": "tsx src/db/scripts/commands/db-migrate.ts",
+    "rollback:dev": "tsx src/db/scripts/commands/db-rollback.ts",
+    "migrate:status": "tsx src/db/scripts/commands/db-status.ts",
+    "db:validate": "tsx src/db/scripts/commands/db-validate.ts",
+    "db:reset:dev": "tsx src/db/scripts/commands/db-reset-dev.ts"
   },
   "dependencies": {
+    "@faker-js/faker": "^9.0.0",
     "@nestjs/common": "^9.4.0",
     "@nestjs/core": "^9.4.0",
     "@nestjs/jwt": "^10.1.0",
@@ -28,7 +36,8 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "sequelize": "^6.37.1",
-    "sequelize-typescript": "^2.1.5"
+    "sequelize-typescript": "^2.1.5",
+    "umzug": "^3.3.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

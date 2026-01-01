@@ -15,6 +15,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { RateLimitMiddleware } from './common/middleware/rate-limit.middleware';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
+import { SeedModule } from './modules/seed/seed.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AuthMiddleware } from './common/middleware/auth.middleware';
     CourseModule,
     EnrollmentModule,
     AdminModule,
+    SeedModule,
   ],
   controllers: [AppController, RpcController],
   providers: [],
