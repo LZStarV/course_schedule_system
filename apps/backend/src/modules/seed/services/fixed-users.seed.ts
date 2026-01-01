@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Sequelize } from 'sequelize-typescript';
+import { v4 as uuidv4 } from 'uuid';
 import { seedDefaults } from '../seed-config';
 
 @Injectable()
@@ -58,10 +59,7 @@ export class FixedUsersSeedService {
       student_id: string | null;
     }
   ) {
-    const [idRes]: any = await sequelize.query(
-      `SELECT uuid_generate_v4() AS id`
-    );
-    const id = idRes?.[0]?.id;
+    const id = uuidv4();
     await sequelize.query(
       `INSERT INTO users(
         id, username, email, real_name, gender, password_hash,

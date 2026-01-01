@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Sequelize } from 'sequelize-typescript';
+import { v4 as uuidv4 } from 'uuid';
 import { seedConfig } from '../seed-config';
 
 @Injectable()
 export class AdminSeedService {
   async run(sequelize: Sequelize) {
-    const idSql = `SELECT uuid_generate_v4() AS id`;
-    const idRes: any = await sequelize.query(idSql);
-    const id = idRes[0]?.[0]?.id;
+    const id = uuidv4();
     const sql = `INSERT INTO users (
       id, username, email, phone, real_name, avatar_url, gender, birth_date,
       student_id, teacher_id, department_id, major, grade, class_name,

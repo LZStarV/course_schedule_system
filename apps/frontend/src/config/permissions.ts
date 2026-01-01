@@ -27,6 +27,46 @@ export function getSidebarByRole(role: UserRole) {
           },
         ],
       },
+      {
+        id: 'courses',
+        code: 'course_center',
+        name: '课程中心',
+        icon: 'book',
+        children: [
+          {
+            id: 'course_browse',
+            code: 'course_browse',
+            name: '浏览课程',
+            icon: 'book',
+            path: '/courses/browse',
+            operations: { view: true },
+          },
+          {
+            id: 'course_favorites',
+            code: 'course_favorites',
+            name: '我的收藏',
+            icon: 'check',
+            path: '/courses/favorites',
+            operations: { view: true, delete: true },
+          },
+        ],
+      },
+      {
+        id: 'my_grades',
+        code: 'my_grades',
+        name: '我的成绩',
+        icon: 'edit_note',
+        path: '/my-grades',
+        operations: { view: true, export: true },
+      },
+      {
+        id: 'personal_center',
+        code: 'personal_center',
+        name: '个人中心',
+        icon: 'user',
+        path: '/personal-center',
+        operations: { view: true, edit: true },
+      },
     ];
   }
   if (role === UserRole.TEACHER) {
