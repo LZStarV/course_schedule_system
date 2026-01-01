@@ -24,9 +24,14 @@ const sequelize = new Sequelize({
 });
 
 function getUmzug() {
+  const migrationPath = path.join(
+    __dirname,
+    './migrations/*.ts'
+  );
+  const globPath = migrationPath.replace(/\\/g, '/');
   return new Umzug({
     migrations: {
-      glob: path.join(__dirname, './migrations/*.ts'),
+      glob: globPath,
     },
     context: sequelize.getQueryInterface(),
     storage: new SequelizeStorage({

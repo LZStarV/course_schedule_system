@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Sequelize } from 'sequelize-typescript';
-import { faker } from '@faker-js/faker';
+import { v4 as uuidv4 } from 'uuid';
+import { faker, zh_CN } from '@faker-js/faker';
 import { createLogger } from '../../../common/logger';
 import { ProgressReporter } from '../../../common/progress-reporter';
 import { chineseNames, seedDefaults } from '../seed-config';
@@ -156,10 +157,7 @@ export class BulkSeedService {
         const username = realName;
         const emailLocal = `t_${deptCode}_${String(t).padStart(5, '0')}`;
         const email = `${emailLocal}@${seedDefaults.emailDomain}`;
-        const idRes: any = await sequelize.query(
-          `SELECT uuid_generate_v4() AS id`
-        );
-        const id = idRes[0]?.[0]?.id;
+        const id = uuidv4();
         await sequelize.query(
           `INSERT INTO users(
             id, username, email, real_name, gender, password_hash,
@@ -197,10 +195,7 @@ export class BulkSeedService {
         const username = realName;
         const emailLocal = `s_${deptCode}_${String(s).padStart(6, '0')}`;
         const email = `${emailLocal}@${seedDefaults.emailDomain}`;
-        const idRes: any = await sequelize.query(
-          `SELECT uuid_generate_v4() AS id`
-        );
-        const id = idRes[0]?.[0]?.id;
+        const id = uuidv4();
         await sequelize.query(
           `INSERT INTO users(
             id, username, email, real_name, gender, password_hash,

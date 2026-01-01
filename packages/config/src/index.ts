@@ -13,7 +13,7 @@ export const devConfig = {
     password: 'password',
     name: 'course_select',
     host: 'localhost',
-    port: 55432,
+    port: 5932,
     ssl: false,
     logging: false,
   },
