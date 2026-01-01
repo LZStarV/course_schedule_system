@@ -1,0 +1,10 @@
+{
+  "departmentsCount": 20,
+  "teachersPerDept": 30,
+  "studentsPerDept": 400,
+  "coursesPerDeptPerTerm": 60,
+  "academicYears": ["2024-2025", "2025-2026"],
+  "semesters": ["FALL", "SPRING"],
+  "enrollmentsPerStudent": 6,
+  "skipIfDataExists": true
+}
