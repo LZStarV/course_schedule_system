@@ -1,11 +1,6 @@
 <template>
   <div style="display: flex; gap: 8px">
-    <permission-wrapper
-      module="user_management"
-      operation="edit"
-    >
-      <n-button size="small" @click="edit">编辑</n-button>
-    </permission-wrapper>
+    <n-button size="small" @click="edit">编辑</n-button>
     <n-button size="small" type="error" @click="softDelete"
       >删除</n-button
     >

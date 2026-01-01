@@ -40,11 +40,11 @@ git reset --hard HEAD
 # 安装依赖（根目录）
 pnpm install
 
-# 启动数据库并完成迁移与种子
+# 数据库迁移与种子数据注入
 # macOS
-./databases/scripts/init_macos.sh
+bash apps/backend/src/db/scripts/init_macos.sh
 # Linux
-./databases/scripts/init_linux.sh
+bash apps/backend/src/db/scripts/init_linux.sh
 
 # 启动后端（NestJS，默认端口 3001）
 pnpm -F @apps/backend dev
@@ -63,21 +63,16 @@ pnpm -F @apps/frontend format
 
 - 管理员（SUPER_ADMIN）
   - 用户名：superadmin
-  - 密码：任意（当前开发阶段不校验密码）
+  - 密码：a123456
   - 邮箱：admin@course-select.edu
   - 说明：登录后具备系统管理权限，权限菜单由 Auth.GetPermissions 返回（包含用户管理、选课规则等）。
 
+- 固定测试用户（便于检查各角色）
+  - 管理员（ADMIN）：admin001 / a123456
+  - 教师（TEACHER）：teacher001 / a123456
+  - 学生（STUDENT）：student001 / a123456
+
 提示：当前 AuthService 仅按用户名查找并签发 JWT，不做密码校验；后续启用密码哈希校验后将更新此说明。
-
-## 工作区结构
-
-- apps/frontend（前端应用）
-- apps/backend（后端应用）
-- packages/shared-types（共享类型）
-- packages/runtime-validation（运行时校验）
-- packages/utils（通用工具）
-- packages/config（统一公共配置）
-- databases（数据库容器与迁移脚本，当前阶段可不启用）
 
 ## 配置说明
 
