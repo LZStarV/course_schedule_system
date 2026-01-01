@@ -8,19 +8,31 @@
       :data="rows"
       :pagination="false"
     />
-    <table-pagination
-      :page="page"
-      :page-size="pageSize"
-      :total="total"
-      @update:page="onPage"
-    />
+    <div class="pagination-container">
+      <n-pagination
+        v-model:page="page"
+        v-model:page-size="pageSize"
+        :page-count="Math.ceil(total / pageSize)"
+        :page-sizes="[10, 20, 50]"
+        :total="total"
+        show-size-picker
+        show-quick-jumper
+        show-total
+        @update:page="onPageChange"
+        @update:page-size="onPageSizeChange"
+      />
+    </div>
   </n-el>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { NAlert, NDataTable, NEl } from 'naive-ui';
-import TablePagination from '@components/common/TablePagination.vue';
+import {
+  NAlert,
+  NDataTable,
+  NEl,
+  NPagination,
+} from 'naive-ui';
 import { listMy } from '@api/modules/enrollment';
 
 const page = ref(1);
@@ -49,9 +61,25 @@ async function fetch() {
   }
 }
 
-function onPage(p: number) {
+function onPageChange(p: number) {
   page.value = p;
   fetch();
 }
+
+function onPageSizeChange(ps: number) {
+  pageSize.value = ps;
+  page.value = 1;
+  fetch();
+}
+
 fetch();
 </script>
+
+<style scoped>
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  padding: 16px;
+}
+</style>
