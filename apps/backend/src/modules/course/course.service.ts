@@ -21,7 +21,7 @@ export class CourseService {
   async listForStudent(params: Record<string, unknown>) {
     const page = Number(params['page'] ?? 1);
     const page_size = Number(params['page_size'] ?? 20);
-    const key = `course:list:${params['academicYear'] ?? ''}:${params['semester'] ?? ''}:${params['status'] ?? ''}:${page}:${page_size}`;
+    const key = `course:list:${String(params['academic_year'] ?? '')}:${String(params['semester'] ?? '')}:${String(params['status'] ?? '')}:${String(params['keyword'] ?? '')}:${String(params['credit'] ?? '')}:${String(params['department_id'] ?? '')}:${String(params['teacher_id'] ?? '')}:${page}:${page_size}`;
     const cached = await redisClient.get(key);
     if (cached) {
       logger.info({ cache: 'hit', key });
@@ -34,7 +34,11 @@ export class CourseService {
         [Op.iLike]: `%${String(params['keyword'])}%`,
       };
     }
-    if (params['credit']) {
+    if (
+      params['credit'] !== undefined &&
+      params['credit'] !== null &&
+      String(params['credit']) !== ''
+    ) {
       where.credit = Number(params['credit']);
     }
     if (params['department_id']) {
@@ -239,6 +243,37 @@ export class CourseService {
         total: count,
         total_pages: Math.ceil(count / page_size),
       },
+    };
+  }
+
+  async approve(
+    dto: {
+      id: string;
+      action: 'APPROVE' | 'REJECT';
+      notes?: string;
+    },
+    context?: Record<string, unknown>
+  ) {
+    const now = new Date();
+    const reviewed_by = (context as any)?.user?.id ?? null;
+    const status =
+      dto.action === 'APPROVE' ? 'APPROVED' : 'REJECTED';
+    await this.courseModel.update(
+      {
+        status,
+        review_notes: dto.notes ?? null,
+        reviewed_at: now,
+        reviewed_by,
+      } as any,
+      { where: { id: dto.id } }
+    );
+    const keys = await redisClient.keys('course:list:*');
+    if (keys.length) await redisClient.del(...keys);
+    return {
+      id: dto.id,
+      status,
+      reviewed_at: now.toISOString(),
+      reviewed_by,
     };
   }
 }

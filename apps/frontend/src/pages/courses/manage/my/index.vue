@@ -27,7 +27,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { NAlert, NDataTable, NEl, NPagination } from 'naive-ui';
+import {
+  NAlert,
+  NDataTable,
+  NEl,
+  NPagination,
+} from 'naive-ui';
 import { call } from '@api/rpc';
 import { RPC } from '@packages/shared-types';
 import type {

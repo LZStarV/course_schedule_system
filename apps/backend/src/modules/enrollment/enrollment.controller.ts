@@ -3,6 +3,32 @@ import { EnrollmentService } from './enrollment.service';
 import { validateDto } from '../../common/utils/validate';
 import { EnrollmentAddDto } from './dto/enrollment-add.dto';
 import { ListMyDto } from './dto/list-my.dto';
+import {
+  IsUUID,
+  IsOptional,
+  IsNumber,
+} from 'class-validator';
+
+class ListByCourseDto {
+  @IsUUID()
+  course_id!: string;
+  @IsOptional()
+  @IsNumber()
+  page?: number;
+  @IsOptional()
+  @IsNumber()
+  page_size?: number;
+}
+
+class UpdateScoreDto {
+  @IsUUID()
+  enrollment_id!: string;
+  @IsOptional()
+  @IsNumber()
+  score?: number;
+  @IsOptional()
+  notes?: string;
+}
 
 @Injectable()
 export class EnrollmentController {
@@ -24,6 +50,24 @@ export class EnrollmentController {
     return await this.service.listMy({
       page: dto.page,
       page_size: dto.page_size,
+    });
+  }
+
+  async listByCourse(params: Record<string, unknown>) {
+    const dto = validateDto(ListByCourseDto, params);
+    return await this.service.listByCourse({
+      course_id: (dto as any).course_id,
+      page: (dto as any).page,
+      page_size: (dto as any).page_size,
+    });
+  }
+
+  async updateScore(params: Record<string, unknown>) {
+    const dto = validateDto(UpdateScoreDto, params);
+    return await this.service.updateScore({
+      enrollment_id: (dto as any).enrollment_id,
+      score: (dto as any).score,
+      notes: (dto as any).notes,
     });
   }
 }

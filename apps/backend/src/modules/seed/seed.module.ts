@@ -7,6 +7,7 @@ import { DepartmentsSeedService } from './services/departments.seed';
 import { CoursesSeedService } from './services/courses.seed';
 import { BulkSeedService } from './services/bulk.seed';
 import { FixedUsersSeedService } from './services/fixed-users.seed';
+import { SemestersSeedService } from './services/semesters.seed';
 
 @Module({
   imports: [SequelizeModule],
@@ -18,11 +19,13 @@ import { FixedUsersSeedService } from './services/fixed-users.seed';
     CoursesSeedService,
     BulkSeedService,
     FixedUsersSeedService,
+    SemestersSeedService,
   ],
   exports: [
     SeedService,
     BulkSeedService,
     FixedUsersSeedService,
+    SemestersSeedService,
   ],
 })
 export class SeedModule {}
