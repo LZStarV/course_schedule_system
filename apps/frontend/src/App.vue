@@ -1,5 +1,5 @@
 <template>
-  <n-config-provider :theme="naiveTheme">
+  <n-config-provider :locale="zhCN" :theme="naiveTheme">
     <n-message-provider>
       <n-dialog-provider>
         <n-layout style="height: 100vh">
