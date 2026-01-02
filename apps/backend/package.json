@@ -8,6 +8,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/main.js",
     "format": "prettier --write .",
+    "rpc:export": "tsx src/common/rpc/rpc-export.ts",
     "seed:dev": "tsx src/db/scripts/commands/db-seed.ts",
     "seed:bulk": "tsx src/db/scripts/commands/db-seed-bulk.ts",
     "migrate:dev": "tsx src/db/scripts/commands/db-migrate.ts",

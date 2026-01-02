@@ -7,6 +7,15 @@ export const devConfig = {
     port: 3001,
     baseUrl: 'http://localhost:3001',
     apiPrefix: '/api',
+    allowedMethods: [
+      'GET',
+      'POST',
+      'PUT',
+      'PATCH',
+      'DELETE',
+      'OPTIONS',
+    ],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   },
   database: {
     user: 'course_admin',

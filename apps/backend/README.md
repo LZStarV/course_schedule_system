@@ -40,6 +40,7 @@ flowchart LR
 - 开发与构建
   - `pnpm -F @apps/backend dev` 启动开发服务
   - `pnpm -F @apps/backend build` 构建产物；`pnpm -F @apps/backend start` 运行
+  - `pnpm -F @apps/backend rpc:export` 生成前端可引用的 RPC 方法常量（详见下文）
 - 数据库
   - `pnpm -F @apps/backend migrate:dev` 执行迁移；`migrate:status` 查看状态；`rollback:dev` 回滚
   - `pnpm -F @apps/backend db:validate` 校验扩展/表/触发器
@@ -99,6 +100,56 @@ curl -s -X POST http://localhost:3001/api/Enrollment.Add \
  -H 'Content-Type: application/json' \
  -d '{"courseId":"<uuid>"}'
 ```
+
+## 九、RPC 方法名常量导出与前端引用
+
+- 目的：避免前端手写字符串方法名（如 `"Admin.ListUsers"`），统一由后端扫描 Controller 自动生成常量分组，并在共享包默认导出。
+- 生成方式：
+  - 运行 `pnpm -F @apps/backend rpc:export`
+  - 脚本位置：`apps/backend/src/common/rpc/rpc-export.ts`
+  - 生成文件：`packages/shared-types/src/rpc-methods.ts`
+  - 导出形式：默认导出对象 `RPC`（只包含分组对象），示例：
+
+```ts
+// packages/shared-types/src/rpc-methods.ts
+export default {
+  Auth: {
+    Login: 'Auth.Login',
+    GetPermissions: 'Auth.GetPermissions',
+    RefreshPermissions: 'Auth.RefreshPermissions',
+  },
+  Course: {
+    ListForStudent: 'Course.ListForStudent',
+    ListByTeacher: 'Course.ListByTeacher',
+  },
+  Enrollment: {
+    Add: 'Enrollment.Add',
+    ListMy: 'Enrollment.ListMy',
+  },
+  Admin: {
+    SetSelectTime: 'Admin.SetSelectTime',
+    ListUsers: 'Admin.ListUsers',
+    CreateUser: 'Admin.CreateUser',
+    UpdateUser: 'Admin.UpdateUser',
+    DeleteUser: 'Admin.DeleteUser',
+  },
+} as const;
+```
+
+- 前端引用：
+
+```ts
+// 前端页面或 Store 中
+import { call } from '@api/rpc';
+import RPC from '@packages/shared-types';
+
+const res = await call(RPC.Admin.ListUsers, {
+  page: 1,
+  page_size: 20,
+});
+```
+
+- 变更流程建议：新增/重命名 Controller 方法后，运行 `rpc:export` 同步更新，再在前端仅通过 `RPC.*.*` 常量引用，避免字符串漂移。
 
 ## 九、FAQ
 

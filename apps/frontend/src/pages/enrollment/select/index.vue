@@ -32,8 +32,12 @@ import {
   useMessage,
   NEl,
 } from 'naive-ui';
-import { listForStudent } from '@api/modules/course';
-import { add } from '@api/modules/enrollment';
+import { call } from '@api/rpc';
+import { RPC } from '@packages/shared-types';
+import type {
+  PaginatedResponse,
+  Course,
+} from '@packages/shared-types';
 import { columns } from './config/table';
 
 const message = useMessage();
@@ -68,11 +72,14 @@ async function fetchAvailableCourses(
     duration: 0,
   });
   try {
-    const res = await listForStudent({
-      keyword: filters.value.keyword,
-      page: page.value,
-      page_size: pageSize.value,
-    });
+    const res = await call<PaginatedResponse<Course>>(
+      RPC.Course.ListForStudent,
+      {
+        keyword: filters.value.keyword,
+        page: page.value,
+        page_size: pageSize.value,
+      }
+    );
     rows.value = res.data.map((r: any) => ({
       ...r,
       __action: () => onSelect(r),
@@ -104,7 +111,7 @@ async function onSelect(row: any) {
     duration: 0,
   });
   try {
-    await add({ courseId: row.id });
+    await call(RPC.Enrollment.Add, { courseId: row.id });
     loadingMessage.destroy();
     message.success('选课成功', { duration: 2000 });
     fetchAvailableCourses(false); // 重新获取选课列表，不显示搜索结果提示

@@ -20,7 +20,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { NAlert, NDataTable, NEl } from 'naive-ui';
-import { listByTeacher } from '@api/modules/course';
+import { call } from '@api/rpc';
+import { RPC } from '@packages/shared-types';
+import type {
+  PaginatedResponse,
+  Course,
+} from '@packages/shared-types';
 import { useUserStore } from '@stores/user.store';
 
 const userStore = useUserStore();
@@ -36,11 +41,14 @@ const columns = [
 
 async function fetchMyCourses() {
   try {
-    const res = await listByTeacher({
-      teacher_id: userStore.user?.id || '',
-      page: page.value,
-      page_size: pageSize.value,
-    });
+    const res = await call<PaginatedResponse<Course>>(
+      RPC.Course.ListByTeacher,
+      {
+        teacher_id: userStore.user?.id || '',
+        page: page.value,
+        page_size: pageSize.value,
+      }
+    );
     rows.value = res?.data || [];
     total.value = res?.pagination?.total || 0;
   } catch {
