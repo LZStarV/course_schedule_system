@@ -11,7 +11,7 @@
       <n-layout-sider
         collapse-mode="width"
         :collapsed-width="60"
-        show-trigger="bar"
+        show-trigger="arrow-circle"
         :native-scrollbar="false"
         bordered
         v-model:collapsed="isCollapsed"
