@@ -32,6 +32,7 @@
       :columns="columns"
       :data="rows"
       :pagination="pagination"
+      :remote="true"
     />
 
     <n-modal v-model:show="showForm">
@@ -109,14 +110,14 @@ const pagination = computed(() => ({
     Math.ceil(total.value / pageSize.value)
   ),
   pageSizeOptions: [10, 20, 50],
-  onUpdatePage: (p: number) => {
+  onUpdatePage: async (p: number) => {
     page.value = p;
-    fetchUsers();
+    await fetchUsers();
   },
-  onUpdatePageSize: (ps: number) => {
+  onUpdatePageSize: async (ps: number) => {
     pageSize.value = ps;
     page.value = 1;
-    fetchUsers();
+    await fetchUsers();
   },
 }));
 function openCreate() {

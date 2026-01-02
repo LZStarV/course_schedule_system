@@ -8,18 +8,31 @@
       :data="rows"
       :pagination="false"
     />
-    <table-pagination
-      :page="page"
-      :page-size="pageSize"
-      :total="total"
-      @update:page="onPage"
-    />
+    <div class="pagination-container">
+      <n-pagination
+        v-model:page="page"
+        v-model:page-size="pageSize"
+        :page-count="Math.ceil(total / pageSize)"
+        :page-sizes="[10, 20, 50]"
+        :total="total"
+        show-size-picker
+        show-quick-jumper
+        show-total
+        @update:page="onPage"
+        @update:page-size="onPageSizeChange"
+      />
+    </div>
   </n-el>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { NAlert, NDataTable, NEl } from 'naive-ui';
+import {
+  NAlert,
+  NDataTable,
+  NEl,
+  NPagination,
+} from 'naive-ui';
 import { listByTeacher } from '@api/modules/course';
 import { useUserStore } from '@stores/user.store';
 
@@ -53,5 +66,21 @@ function onPage(p: number) {
   page.value = p;
   fetchMyCourses();
 }
+
+function onPageSizeChange(ps: number) {
+  pageSize.value = ps;
+  page.value = 1;
+  fetchMyCourses();
+}
+
 fetchMyCourses();
 </script>
+
+<style scoped>
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  padding: 16px;
+}
+</style>

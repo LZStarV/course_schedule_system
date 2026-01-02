@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar">
+  <n-el type="div" class="sidebar">
     <n-menu
       :value="activeKey"
       :options="options"
@@ -9,14 +9,14 @@
       @mouseleave="handleMenuMouseLeave"
       :trigger="props.isCollapsed ? 'hover' : 'click'"
     />
-  </div>
+  </n-el>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { usePermissionStore } from '@stores/permission.store';
-import { NMenu, type MenuOption } from 'naive-ui';
+import { NMenu, type MenuOption, NEl } from 'naive-ui';
 import {
   renderIconFn,
   iconNameOrError,

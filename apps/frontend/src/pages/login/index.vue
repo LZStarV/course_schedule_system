@@ -12,6 +12,7 @@
           <n-form-item label="密码" path="password">
             <n-input
               v-model:value="form.password"
+              show-password-on="click"
               type="password"
             />
           </n-form-item>
