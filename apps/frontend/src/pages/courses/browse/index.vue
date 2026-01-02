@@ -14,7 +14,7 @@
         placeholder="学分"
         :min="0"
       />
-      <n-button type="primary" @click="fetch(true)"
+      <n-button type="primary" @click="fetchCourses(true)"
         >搜索</n-button
       >
     </n-el>
@@ -56,17 +56,17 @@ const pagination = computed(() => ({
   pageSizeOptions: [10, 20, 50],
   onUpdatePage: (p: number) => {
     page.value = p;
-    fetch(false);
+    fetchCourses(false);
   },
   onUpdatePageSize: (ps: number) => {
     pageSize.value = ps;
     page.value = 1;
-    fetch(false);
+    fetchCourses(false);
   },
 }));
 const rows = ref<any[]>([]);
 
-async function fetch(showMessage: boolean = false) {
+async function fetchCourses(showMessage: boolean = false) {
   const loadingMessage = message.loading('搜索中...', {
     duration: 0,
   });
@@ -100,5 +100,5 @@ async function fetch(showMessage: boolean = false) {
   }
 }
 
-onMounted(() => fetch(false));
+onMounted(() => fetchCourses(false));
 </script>
