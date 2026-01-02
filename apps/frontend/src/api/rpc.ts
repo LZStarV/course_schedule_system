@@ -15,11 +15,11 @@ export type RpcOptions = {
  */
 export async function call<T>(
   method: string,
-  params: Record<string, unknown>,
+  params?: Record<string, unknown>,
   options?: RpcOptions
 ) {
   const url = `${devConfig.backend.apiPrefix}/${method}`;
-  const res = await http.post(url, params, {
+  const res = await http.post(url, params ?? {}, {
     timeout: options?.timeoutMs ?? REQUEST_TIMEOUT_MS,
     signal: options?.signal,
   });

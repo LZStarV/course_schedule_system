@@ -33,7 +33,8 @@ import {
   NEl,
   NPagination,
 } from 'naive-ui';
-import { listMy } from '@api/modules/enrollment';
+import { call } from '@api/rpc';
+import { RPC } from '@packages/shared-types';
 
 const page = ref(1);
 const pageSize = ref(10);
@@ -49,7 +50,7 @@ const columns = [
 
 async function fetchMySchedule() {
   try {
-    const res = await listMy({
+    const res = await call<any>(RPC.Enrollment.ListMy, {
       page: page.value,
       page_size: pageSize.value,
     });
