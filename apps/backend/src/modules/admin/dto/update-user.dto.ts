@@ -5,6 +5,9 @@ export class UpdateUserDto {
   id!: string;
   @IsOptional()
   @IsString()
+  real_name?: string;
+  @IsOptional()
+  @IsString()
   email?: string;
   @IsOptional()
   @IsString()
