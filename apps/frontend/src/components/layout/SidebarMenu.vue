@@ -6,6 +6,8 @@
       :collapsed="props.isCollapsed"
       :default-expanded-keys="defaultExpandedKeys"
       @update:value="onSelect"
+      @mouseleave="handleMenuMouseLeave"
+      :trigger="props.isCollapsed ? 'hover' : 'click'"
     />
   </div>
 </template>
@@ -26,22 +28,34 @@ const route = useRoute();
 const perm = usePermissionStore();
 
 const options = computed(() => {
-  const toOptions = (items: any[]): MenuOption[] =>
+  const toOptions = (
+    items: any[],
+    level: number = 1
+  ): MenuOption[] =>
     items.map((it: any) => ({
       key: it.path || it.code,
-      label: props.isCollapsed
-        ? ''
-        : iconNameOrError(it.icon) === 'error'
-          ? 'error'
-          : it.name,
+      // 只有一级菜单根据collapsed状态和是否有子项决定是否显示label
+      label:
+        level === 1
+          ? props.isCollapsed &&
+            it.children &&
+            it.children.length > 0
+            ? ''
+            : iconNameOrError(it.icon) === 'error'
+              ? 'error'
+              : it.name
+          : iconNameOrError(it.icon) === 'error'
+            ? 'error'
+            : it.name,
       icon: renderIconFn(it.icon),
       children: it.children
-        ? toOptions(it.children)
+        ? toOptions(it.children, level + 1)
         : undefined,
     }));
   const src: any[] = (perm as any).sidebar ?? [];
   return toOptions(src);
 });
+
 const activeKey = computed(() => route.path);
 
 const defaultExpandedKeys = computed(() => {
@@ -61,6 +75,14 @@ const defaultExpandedKeys = computed(() => {
 
 function onSelect(key: string) {
   if (key) router.push(key);
+}
+
+// 处理菜单鼠标离开事件
+function handleMenuMouseLeave() {
+  if (props.isCollapsed) {
+    // 当菜单收起时，鼠标离开后收起所有展开的菜单项
+    expandedKeys.value = [];
+  }
 }
 </script>
 
