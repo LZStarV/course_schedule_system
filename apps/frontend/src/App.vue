@@ -18,6 +18,7 @@ import {
   NDialogProvider,
   darkTheme,
   NLayout,
+  zhCN,
 } from 'naive-ui';
 import { useThemeStore } from '@stores/theme.store';
 const theme = useThemeStore();

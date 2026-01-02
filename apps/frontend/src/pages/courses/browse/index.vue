@@ -22,6 +22,7 @@
       :columns="columns"
       :data="rows"
       :pagination="pagination"
+      :remote="true"
     />
   </n-el>
 </template>
@@ -59,14 +60,14 @@ const pagination = computed(() => ({
     Math.ceil(total.value / pageSize.value)
   ),
   pageSizeOptions: [10, 20, 50],
-  onUpdatePage: (p: number) => {
+  onUpdatePage: async (p: number) => {
     page.value = p;
-    fetchCourses(false);
+    await fetchCourses(false);
   },
-  onUpdatePageSize: (ps: number) => {
+  onUpdatePageSize: async (ps: number) => {
     pageSize.value = ps;
     page.value = 1;
-    fetchCourses(false);
+    await fetchCourses(false);
   },
 }));
 const rows = ref<any[]>([]);
