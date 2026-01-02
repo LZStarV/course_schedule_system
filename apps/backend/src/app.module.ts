@@ -16,6 +16,16 @@ import { RateLimitMiddleware } from './common/middleware/rate-limit.middleware';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
 import { SeedModule } from './modules/seed/seed.module';
+import { MaterialModule } from './modules/material/material.module';
+import { SystemSettingsModule } from './modules/system-settings/system-settings.module';
+import { GradeAuditModule } from './modules/grade-audit/grade-audit.module';
+import { FavoritesModule } from './modules/favorites/favorites.module';
+import { AnnouncementsModule } from './modules/announcements/announcements.module';
+import { TeachingScheduleModule } from './modules/teaching-schedule/teaching-schedule.module';
+import { SemesterModule } from './modules/semester/semester.module';
+import { StatsSystemModule } from './modules/stats-system/stats-system.module';
+import { StatsTeachingModule } from './modules/stats-teaching/stats-teaching.module';
+import { StatsUsersModule } from './modules/stats-users/stats-users.module';
 
 @Module({
   imports: [
@@ -40,6 +50,16 @@ import { SeedModule } from './modules/seed/seed.module';
     EnrollmentModule,
     AdminModule,
     SeedModule,
+    MaterialModule,
+    SystemSettingsModule,
+    GradeAuditModule,
+    FavoritesModule,
+    AnnouncementsModule,
+    TeachingScheduleModule,
+    SemesterModule,
+    StatsSystemModule,
+    StatsTeachingModule,
+    StatsUsersModule,
   ],
   controllers: [AppController, RpcAliasController],
   providers: [],

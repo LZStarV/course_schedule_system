@@ -41,7 +41,13 @@ const pageSize = ref(10);
 const total = ref(0);
 const rows = ref<any[]>([]);
 const columns = [
-  { title: '课程名称', key: 'course.name' },
+  {
+    title: '课程名称',
+    key: 'course_name',
+    render(row: any) {
+      return row.course?.name || '-';
+    },
+  },
   { title: '周几', key: 'weekday' },
   { title: '开始时间', key: 'start_time' },
   { title: '结束时间', key: 'end_time' },

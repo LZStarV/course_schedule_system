@@ -87,12 +87,8 @@ export class AdminService {
     password: string;
     real_name: string;
   }) {
-    const id =
-      (
-        await this.sequelize.query(
-          `SELECT uuid_generate_v4() AS id`
-        )
-      )[0]?.[0]?.id || undefined;
+    const { v4: uuidv4 } = await import('uuid');
+    const id = uuidv4();
     const crypto = await import('node:crypto');
     const hash = crypto
       .createHash('sha256')

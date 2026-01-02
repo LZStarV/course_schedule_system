@@ -8,6 +8,7 @@ import { DepartmentsSeedService } from '../../../modules/seed/services/departmen
 import { CoursesSeedService } from '../../../modules/seed/services/courses.seed';
 import { createLogger } from '../../../common/logger';
 import { FixedUsersSeedService } from '../../../modules/seed/services/fixed-users.seed';
+import { SemestersSeedService } from '../../../modules/seed/services/semesters.seed';
 
 const log = createLogger('db-cli');
 
@@ -20,11 +21,13 @@ async function main() {
   const departments = app.get(DepartmentsSeedService);
   const courses = app.get(CoursesSeedService);
   const fixed = app.get(FixedUsersSeedService);
+  const semesters = app.get(SemestersSeedService);
   await systemRole.run(sequelize);
   await admin.run(sequelize);
   await departments.run(sequelize);
   await courses.run(sequelize);
   await fixed.run(sequelize);
+  await semesters.run(sequelize);
   await app.close();
 }
 

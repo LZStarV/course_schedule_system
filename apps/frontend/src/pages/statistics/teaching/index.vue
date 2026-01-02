@@ -1,14 +1,7 @@
 <template>
-  <n-el type="div">
-    <n-result
-      status="info"
-      title="教学数据"
-      description="正在开发中"
-    >
-    </n-result>
-  </n-el>
+  <n-el type="div"></n-el>
 </template>
 
 <script setup lang="ts">
-import { NResult, NEl } from 'naive-ui';
+import { NEl } from 'naive-ui';
 </script>

@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, h } from 'vue';
 import {
   NInput,
   NInputNumber,
@@ -43,7 +43,7 @@ import type {
   PaginatedResponse,
   Course,
 } from '@packages/shared-types';
-import { columns } from './config/table';
+import { columns as baseColumns } from './config/table';
 
 const message = useMessage();
 const filters = ref<{ keyword?: string; credit?: number }>(
@@ -71,6 +71,24 @@ const pagination = computed(() => ({
   },
 }));
 const rows = ref<any[]>([]);
+const columns = computed(() => {
+  const actionCol = {
+    title: '操作',
+    key: 'actions',
+    render(row: any) {
+      return h(
+        NButton,
+        {
+          type: 'success',
+          size: 'small',
+          onClick: () => addFavorite(row),
+        },
+        { default: () => '收藏' }
+      );
+    },
+  };
+  return [...baseColumns, actionCol];
+});
 
 async function fetchCourses(showMessage: boolean = false) {
   const loadingMessage = message.loading('搜索中...', {
@@ -106,6 +124,15 @@ async function fetchCourses(showMessage: boolean = false) {
       '搜索失败：' + (error.message || '未知错误'),
       { duration: 3000 }
     );
+  }
+}
+
+async function addFavorite(row: any) {
+  try {
+    await call(RPC.Favorites.Add, { course_id: row.id });
+    message.success('已收藏');
+  } catch (err: any) {
+    message.error(err?.message || '收藏失败');
   }
 }
 
