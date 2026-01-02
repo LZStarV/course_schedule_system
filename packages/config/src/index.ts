@@ -6,7 +6,7 @@ export const devConfig = {
   backend: {
     port: 3001,
     baseUrl: 'http://localhost:3001',
-    rpcPath: '/rpc',
+    apiPrefix: '/api',
   },
   database: {
     user: 'course_admin',

@@ -4,7 +4,7 @@ import {
   MiddlewareConsumer,
 } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { RpcController } from './common/rpc/rpc.controller';
+import { RpcAliasController } from './common/rpc/rpc.alias.controller';
 import { RpcModule } from './common/rpc/rpc.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { devConfig } from '@packages/config';
@@ -41,7 +41,7 @@ import { SeedModule } from './modules/seed/seed.module';
     AdminModule,
     SeedModule,
   ],
-  controllers: [AppController, RpcController],
+  controllers: [AppController, RpcAliasController],
   providers: [],
 })
 export class AppModule implements NestModule {
@@ -52,6 +52,6 @@ export class AppModule implements NestModule {
         AuthMiddleware,
         RateLimitMiddleware
       )
-      .forRoutes(devConfig.backend.rpcPath);
+      .forRoutes(devConfig.backend.apiPrefix);
   }
 }
