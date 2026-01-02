@@ -21,7 +21,7 @@
         placeholder="状态"
         style="max-width: 180px"
       />
-      <n-button type="primary" @click="fetch"
+      <n-button type="primary" @click="fetchUsers"
         >搜索</n-button
       >
       <n-button type="success" @click="openCreate"
@@ -84,7 +84,7 @@ const rows = ref<any[]>([]);
 const showForm = ref(false);
 const editing = ref<any | null>(null);
 
-async function fetch() {
+async function fetchUsers() {
   try {
     const res = await listUsers({
       keyword: filters.value.keyword,
@@ -111,12 +111,12 @@ const pagination = computed(() => ({
   pageSizeOptions: [10, 20, 50],
   onUpdatePage: (p: number) => {
     page.value = p;
-    fetch();
+    fetchUsers();
   },
   onUpdatePageSize: (ps: number) => {
     pageSize.value = ps;
     page.value = 1;
-    fetch();
+    fetchUsers();
   },
 }));
 function openCreate() {
@@ -126,8 +126,8 @@ function openCreate() {
 function onSubmit() {
   message.success('已提交，后端接口待补齐');
   showForm.value = false;
-  fetch();
+  fetchUsers();
 }
 
-onMounted(fetch);
+onMounted(fetchUsers);
 </script>

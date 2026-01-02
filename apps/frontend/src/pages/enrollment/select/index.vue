@@ -9,7 +9,9 @@
         placeholder="课程名/教师"
         style="max-width: 240px"
       />
-      <n-button type="primary" @click="fetch(true)"
+      <n-button
+        type="primary"
+        @click="fetchAvailableCourses(true)"
         >搜索</n-button
       >
     </n-el>
@@ -49,17 +51,19 @@ const pagination = computed(() => ({
   pageSizeOptions: [10, 20, 50],
   onUpdatePage: (p: number) => {
     page.value = p;
-    fetch(false);
+    fetchAvailableCourses(false);
   },
   onUpdatePageSize: (ps: number) => {
     pageSize.value = ps;
     page.value = 1;
-    fetch(false);
+    fetchAvailableCourses(false);
   },
 }));
 const rows = ref<any[]>([]);
 
-async function fetch(showMessage: boolean = false) {
+async function fetchAvailableCourses(
+  showMessage: boolean = false
+) {
   const loadingMessage = message.loading('搜索中...', {
     duration: 0,
   });
@@ -103,7 +107,7 @@ async function onSelect(row: any) {
     await add({ courseId: row.id });
     loadingMessage.destroy();
     message.success('选课成功', { duration: 2000 });
-    fetch(false); // 重新获取选课列表，不显示搜索结果提示
+    fetchAvailableCourses(false); // 重新获取选课列表，不显示搜索结果提示
   } catch (error: any) {
     loadingMessage.destroy();
     message.error(
@@ -113,5 +117,5 @@ async function onSelect(row: any) {
   }
 }
 
-onMounted(() => fetch(false));
+onMounted(() => fetchAvailableCourses(false));
 </script>
