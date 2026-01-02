@@ -47,7 +47,7 @@ const columns = [
   { title: '地点', key: 'location' },
 ];
 
-async function fetch() {
+async function fetchMySchedule() {
   try {
     const res = await listMy({
       page: page.value,
@@ -63,16 +63,16 @@ async function fetch() {
 
 function onPageChange(p: number) {
   page.value = p;
-  fetch();
+  fetchMySchedule();
 }
 
 function onPageSizeChange(ps: number) {
   pageSize.value = ps;
   page.value = 1;
-  fetch();
+  fetchMySchedule();
 }
 
-fetch();
+fetchMySchedule();
 </script>
 
 <style scoped>

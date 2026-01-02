@@ -20,7 +20,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { NAlert, NDataTable, NEl } from 'naive-ui';
-import TablePagination from '@components/common/TablePagination.vue';
 import { listByTeacher } from '@api/modules/course';
 import { useUserStore } from '@stores/user.store';
 
@@ -35,7 +34,7 @@ const columns = [
   { title: '状态', key: 'status' },
 ];
 
-async function fetch() {
+async function fetchMyCourses() {
   try {
     const res = await listByTeacher({
       teacher_id: userStore.user?.id || '',
@@ -52,7 +51,7 @@ async function fetch() {
 
 function onPage(p: number) {
   page.value = p;
-  fetch();
+  fetchMyCourses();
 }
-fetch();
+fetchMyCourses();
 </script>

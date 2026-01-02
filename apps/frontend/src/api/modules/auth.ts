@@ -9,7 +9,7 @@ export async function login(params: {
     token: string;
     refreshToken: string;
     user: Pick<User, 'id' | 'username' | 'role'>;
-  }>('Auth.Login', params, { version: 'v1' });
+  }>('Auth.Login', params);
 }
 
 export async function getPermissions() {
