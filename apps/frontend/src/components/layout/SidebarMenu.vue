@@ -4,6 +4,7 @@
       :value="activeKey"
       :options="options"
       :collapsed="props.isCollapsed"
+      :default-expanded-keys="defaultExpandedKeys"
       @update:value="onSelect"
     />
   </div>
@@ -42,6 +43,21 @@ const options = computed(() => {
   return toOptions(src);
 });
 const activeKey = computed(() => route.path);
+
+const defaultExpandedKeys = computed(() => {
+  const getExpandedKeys = (items: any[]): string[] => {
+    const keys: string[] = [];
+    items.forEach(item => {
+      if (item.children && item.children.length > 0) {
+        keys.push(item.path || item.code);
+        keys.push(...getExpandedKeys(item.children));
+      }
+    });
+    return keys;
+  };
+  const src: any[] = (perm as any).sidebar ?? [];
+  return getExpandedKeys(src);
+});
 
 function onSelect(key: string) {
   if (key) router.push(key);
