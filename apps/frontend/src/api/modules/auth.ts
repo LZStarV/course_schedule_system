@@ -16,5 +16,5 @@ export async function getPermissions() {
   return await call<{
     permissions: Record<string, unknown>;
     menus: Record<string, unknown>;
-  }>('Auth.GetPermissions', {});
+  }>('Auth.GetPermissions');
 }

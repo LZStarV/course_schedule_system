@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { devConfig } from '@packages/config';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { RpcDiscoveryProvider } from './common/rpc/rpc.discovery';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -28,6 +29,9 @@ async function bootstrap() {
     })
   );
   app.useGlobalFilters(new HttpExceptionFilter());
+  await app
+    .get(RpcDiscoveryProvider)
+    .onApplicationBootstrap();
   await app.listen(devConfig.backend.port);
 }
 
