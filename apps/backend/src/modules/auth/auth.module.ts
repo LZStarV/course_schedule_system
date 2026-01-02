@@ -3,10 +3,9 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from '../../models/user.model';
-import { RpcModule } from '../../common/rpc/rpc.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([User]), RpcModule],
+  imports: [SequelizeModule.forFeature([User])],
   providers: [AuthService, AuthController],
 })
 export class AuthModule {}

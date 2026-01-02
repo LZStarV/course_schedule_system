@@ -4,15 +4,15 @@
 
 - 技术框架：NestJS + TypeScript；ORM：Sequelize（sequelize-typescript）；日志：Pino
 - 运行形态：开发态使用 tsx；生产态使用 tsc 构建后运行
-- 接口风格：统一 RPC 入口 `/rpc`，通过 `method` 路由到具体服务方法
+- 接口风格：统一语义化 RPC 入口 `${backend.apiPrefix}/:method`（默认 `/api/:method`），方法名即路径，Body 为 params；响应遵循 JSON‑RPC 2.0（result/error）
 
 ## 二、数据链路
 
 ```mermaid
 flowchart LR
-  A[Client] --> B[RPC Endpoint]
+  A[Client] --> B[RPC Endpoint /api/:method]
   B --> C[Controller]
-  C --> D[Auth Guard]
+  C --> D[Auth Middleware]
   D --> E[Service Layer]
   E -->|cache| F[Redis Cache]
   E -->|query| G[Sequelize ORM]
@@ -84,20 +84,20 @@ graph TD
 - TEACHER：teacher001 / a123456
 - STUDENT：student001 / a123456
 
-## 八、RPC 示例
+## 八、RPC 示例（语义化路径）
 
 ```bash
-curl -s -X POST http://localhost:3001/rpc \
+curl -s -X POST http://localhost:3001/api/Auth.Login \
  -H 'Content-Type: application/json' \
- -d '{"id":"1","method":"Auth.Login","params":{"username":"superadmin","password":"a123456"}}'
+ -d '{"username":"superadmin","password":"a123456"}'
 
-curl -s -X POST http://localhost:3001/rpc \
+curl -s -X POST http://localhost:3001/api/Course.ListForStudent \
  -H 'Content-Type: application/json' \
- -d '{"id":"2","method":"Course.ListForStudent","params":{"page":1,"page_size":20}}'
+ -d '{"page":1,"page_size":20}'
 
-curl -s -X POST http://localhost:3001/rpc \
+curl -s -X POST http://localhost:3001/api/Enrollment.Add \
  -H 'Content-Type: application/json' \
- -d '{"id":"3","method":"Enrollment.Add","params":{"courseId":"<uuid>"}}'
+ -d '{"courseId":"<uuid>"}'
 ```
 
 ## 九、FAQ
