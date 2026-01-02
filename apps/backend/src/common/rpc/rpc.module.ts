@@ -1,5 +1,7 @@
 import { Module, Global } from '@nestjs/common';
+import { DiscoveryModule } from '@nestjs/core';
 import { RpcRegistry } from './rpc.registry';
+import { RpcDiscoveryProvider } from './rpc.discovery';
 
 /**
  * 全局 RPC 模块
@@ -8,7 +10,8 @@ import { RpcRegistry } from './rpc.registry';
  */
 @Global()
 @Module({
-  providers: [RpcRegistry],
+  imports: [DiscoveryModule],
+  providers: [RpcRegistry, RpcDiscoveryProvider],
   exports: [RpcRegistry],
 })
 export class RpcModule {}

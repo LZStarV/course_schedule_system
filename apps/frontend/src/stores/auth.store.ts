@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { login as rpcLogin } from '@api/modules/auth';
+import { call } from '@api/rpc';
+import { RPC } from '@packages/shared-types';
 import { useUserStore } from '@stores/user.store';
 import { usePermissionStore } from '@stores/permission.store';
 import { UserRole } from '@/types/role';
@@ -61,7 +62,15 @@ export const useAuthStore = defineStore('auth', () => {
 
   // 登录认证
   async function login(username: string, password: string) {
-    const res = await rpcLogin({ username, password });
+    const res = await call<{
+      token: string;
+      refreshToken: string;
+      user: {
+        id: string;
+        username: string;
+        role: keyof typeof UserRole;
+      };
+    }>(RPC.Auth.Login, { username, password });
     token.value = res.token;
     refreshToken.value = res.refreshToken;
     localStorage.setItem('access_token', token.value);

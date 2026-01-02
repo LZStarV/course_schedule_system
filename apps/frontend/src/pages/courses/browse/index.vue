@@ -36,7 +36,12 @@ import {
   NEl,
   useMessage,
 } from 'naive-ui';
-import { listForStudent } from '@api/modules/course';
+import { call } from '@api/rpc';
+import { RPC } from '@packages/shared-types';
+import type {
+  PaginatedResponse,
+  Course,
+} from '@packages/shared-types';
 import { columns } from './config/table';
 
 const message = useMessage();
@@ -71,12 +76,15 @@ async function fetchCourses(showMessage: boolean = false) {
     duration: 0,
   });
   try {
-    const res = await listForStudent({
-      keyword: filters.value.keyword,
-      credit: filters.value.credit,
-      page: page.value,
-      page_size: pageSize.value,
-    });
+    const res = await call<PaginatedResponse<Course>>(
+      RPC.Course.ListForStudent,
+      {
+        keyword: filters.value.keyword,
+        credit: filters.value.credit,
+        page: page.value,
+        page_size: pageSize.value,
+      }
+    );
     rows.value = res.data;
     total.value = res.pagination.total;
     loadingMessage.destroy();

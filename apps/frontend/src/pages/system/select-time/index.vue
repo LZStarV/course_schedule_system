@@ -35,7 +35,8 @@ import {
   NButton,
   useMessage,
 } from 'naive-ui';
-import { setSelectTime } from '@api/modules/system';
+import { call } from '@api/rpc';
+import { RPC } from '@packages/shared-types';
 
 const message = useMessage();
 const loading = ref(false);
@@ -55,7 +56,7 @@ async function submit() {
         ? new Date(form.value.end).toISOString()
         : '',
     };
-    await setSelectTime(payload);
+    await call(RPC.Admin.SetSelectTime, payload);
     message.success('设置成功');
   } finally {
     loading.value = false;

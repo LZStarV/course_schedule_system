@@ -14,7 +14,6 @@ apps/frontend/
 │   ├── api/                 # 请求层：transport + protocol
 │   │   ├── client.ts        # Axios 实例、鉴权头、超时与错误归一化
 │   │   ├── rpc.ts           # JSON‑RPC 适配器：call/notify/batch
-│   │   └── modules/         # 业务方法包装（auth/course/enrollment/system/…）
 │   ├── components/
 │   │   ├── common/          # 通用组件（Breadcrumbs/FormWrapper/TablePagination等）
 │   │   └── layout/          # 布局组件（HeaderBar/SidebarMenu）
@@ -90,8 +89,7 @@ apps/frontend/
   - `call(method, params, options?)`：返回 JSON‑RPC `result`
   - `notify(method, params, options?)`：发送 JSON‑RPC 封套且无 id（不返回响应）
   - `batch([{method, params}], options?)`：Promise.all 并行封装
-- 业务包装：[api/modules/\*](./src/api/modules)
-  - 例如 `auth.ts` 的 `login/getPermissions`、`course.ts` 的 `listForStudent/listByTeacher` 等
+  - 方法名引用：默认从共享包引入 `RPC` 分组对象（见下一节），不再手写字符串，也不再使用 `api/modules/*` 包装层。
 
 ## 九、布局与组件
 
@@ -143,14 +141,33 @@ apps/frontend/
 - 通知：发送 JSON‑RPC 封套且不带 id（不返回响应体）
 - 鉴权：后端对 `/api` 前缀应用日志/鉴权透传/限流中间件；前端在拦截器自动注入 Bearer Token
 
-## 十四、常见问题（FAQ）
+## 十四、RPC 方法名常量引用（默认导出）
+
+- 目的：避免方法名字符串拼写错误，统一从共享包默认导出的分组对象引用。
+- 生成方式：在后端运行 `pnpm -F @apps/backend rpc:export`，会生成 `packages/shared-types/src/rpc-methods.ts`，并由共享包默认导出。
+- 引用示例：
+
+```ts
+import { call } from '@api/rpc';
+import RPC from '@packages/shared-types';
+
+// 登录
+await call(RPC.Auth.Login, { username, password });
+
+// 列表与分页
+await call(RPC.Admin.ListUsers, { page: 1, page_size: 20 });
+```
+
+- 迁移说明：原 `src/api/modules/*` 已移除；各页面直接通过 `rpc.call` + `RPC.*.*` 调用后端方法。
+
+## 十五、常见问题（FAQ）
 
 - 登录后页面未跳转：检查 `auth.init()` 是否执行、`permission.store.getMenu(role)` 是否加载菜单
 - 路由 403/不可见：确认菜单配置的 `path` 是否包含目标路由；`isPathAllowed(path)` 控制可见
 - 请求超时：默认 10s；可在调用处传 `{ timeoutMs: 5000 }` 或使用 AbortController 取消
 - 图标显示异常：检查菜单 `icon` 是否在 `icon-map.ts` 定义
 
-## 十五、调试与扩展建议
+## 十六、调试与扩展建议
 
 - 在 `rpc.ts` 统一错误归一化（可加入 `error.data` 展示字段级提示）
 - 为常用模块增加 typed wrapper 与返回类型，提升类型提示

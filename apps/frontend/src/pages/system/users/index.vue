@@ -57,7 +57,12 @@ import {
 } from 'naive-ui';
 import UserForm from './components/UserForm/index.vue';
 import { columns } from './config/table';
-import { listUsers } from '@api/modules/systemUsers';
+import { call } from '@api/rpc';
+import { RPC } from '@packages/shared-types';
+import type {
+  PaginatedResponse,
+  User,
+} from '@packages/shared-types';
 
 const message = useMessage();
 const filters = ref<{
@@ -86,13 +91,16 @@ const editing = ref<any | null>(null);
 
 async function fetchUsers() {
   try {
-    const res = await listUsers({
-      keyword: filters.value.keyword,
-      role: filters.value.role,
-      status: filters.value.status,
-      page: page.value,
-      page_size: pageSize.value,
-    });
+    const res = await call<PaginatedResponse<User>>(
+      RPC.Admin.ListUsers,
+      {
+        keyword: filters.value.keyword,
+        role: filters.value.role,
+        status: filters.value.status,
+        page: page.value,
+        page_size: pageSize.value,
+      }
+    );
     rows.value = res?.data || [];
     total.value = res?.pagination?.total || 0;
   } catch {
