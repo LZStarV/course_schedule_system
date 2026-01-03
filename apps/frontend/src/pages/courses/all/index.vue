@@ -34,12 +34,39 @@
         >搜索</n-button
       >
     </n-el>
+    <n-el
+      type="div"
+      style="
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 12px;
+      "
+    >
+      <n-input
+        v-model:value="annKeyword"
+        placeholder="搜索公告关键词"
+        style="max-width: 240px"
+      />
+      <n-switch v-model:value="annMineOnly" />
+      <span>仅当前教师公告</span>
+      <n-button type="primary" @click="searchAnnouncements"
+        >搜公告</n-button
+      >
+    </n-el>
     <n-data-table
       :columns="columns"
       :data="rows"
       :pagination="pagination"
       :remote="true"
     />
+    <n-card title="公告列表" style="margin-top: 12px">
+      <n-data-table
+        :columns="annColumns"
+        :data="annRows"
+        :pagination="false"
+      />
+    </n-card>
   </n-el>
 </template>
 
@@ -55,9 +82,13 @@ import {
   NDataTable,
   useMessage,
   NSelect,
+  NSwitch,
+  NCard,
 } from 'naive-ui';
+import { useUserStore } from '@stores/user.store';
 
 const message = useMessage();
+const userStore = useUserStore();
 const rows = ref<any[]>([]);
 const page = ref(1);
 const pageSize = ref(10);
@@ -98,8 +129,40 @@ const pagination = computed(() => ({
 
 const columns = [
   { title: '课程名', key: 'name' },
+  {
+    title: '任课教师',
+    key: 'teacher.username',
+    render(row: any) {
+      return row.teacher?.username || '-';
+    },
+  },
   { title: '学分', key: 'credit' },
   { title: '状态', key: 'status' },
+  {
+    title: '操作',
+    key: 'actions',
+    render(row: any) {
+      return h(
+        NButton,
+        {
+          size: 'small',
+          type: 'primary',
+          onClick: () => viewDetail(row),
+        },
+        { default: () => '查看详情' }
+      );
+    },
+  },
+];
+
+const annKeyword = ref('');
+const annMineOnly = ref(true);
+const annRows = ref<any[]>([]);
+const annColumns = [
+  { title: '标题', key: 'title' },
+  { title: '课程名', key: 'course_name' },
+  { title: '状态', key: 'status' },
+  { title: '发布时间', key: 'published_at' },
 ];
 
 async function fetch(showMsg = false) {
@@ -123,6 +186,37 @@ async function fetch(showMsg = false) {
   } catch (err: any) {
     loadingMsg.destroy();
     message.error(err?.message || '加载失败');
+  }
+}
+
+function viewDetail(row: any) {
+  const id = row?.id;
+  if (!id) return;
+  // 使用路由跳转，避免 404 误跳
+  import('vue-router').then(({ useRouter }: any) => {
+    const router = useRouter();
+    router.push(`/courses/detail/${id}`);
+  });
+}
+
+async function searchAnnouncements() {
+  const loadingMsg = message.loading('搜索公告中...', {
+    duration: 0,
+  });
+  try {
+    const res: any = await call(RPC.Announcements.GetList, {
+      teacher_id: annMineOnly.value
+        ? userStore.user?.id
+        : undefined,
+      keyword: annKeyword.value || undefined,
+      page: 1,
+      page_size: 20,
+    });
+    annRows.value = res?.data || [];
+    loadingMsg.destroy();
+  } catch (err: any) {
+    loadingMsg.destroy();
+    message.error(err?.message || '搜索失败');
   }
 }
 

@@ -9,6 +9,7 @@ export const RPC = {
     ListForStudent: 'Course.ListForStudent',
     ListByTeacher: 'Course.ListByTeacher',
     Approve: 'Course.Approve',
+    GetDetail: 'Course.GetDetail',
   },
   Enrollment: {
     Add: 'Enrollment.Add',

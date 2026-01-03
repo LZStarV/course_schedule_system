@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, h } from 'vue';
 import {
   NInput,
   NButton,
@@ -70,10 +70,32 @@ const columns = [
       return row.course?.name || '-';
     },
   },
+  {
+    title: '任课教师',
+    key: 'teacher',
+    render(row: any) {
+      return row.course?.teacher?.username || '-';
+    },
+  },
   { title: '周几', key: 'weekday' },
   { title: '开始时间', key: 'start_time' },
   { title: '结束时间', key: 'end_time' },
   { title: '地点', key: 'location' },
+  {
+    title: '操作',
+    key: 'actions',
+    render(row: any) {
+      return h(
+        NButton,
+        {
+          size: 'small',
+          type: 'primary',
+          onClick: () => viewDetail(row),
+        },
+        { default: () => '查看详情' }
+      );
+    },
+  },
 ];
 
 async function fetchMySchedule(showMsg = false) {
@@ -93,6 +115,15 @@ async function fetchMySchedule(showMsg = false) {
     rows.value = [];
     total.value = 0;
   }
+}
+
+function viewDetail(row: any) {
+  const id = row?.course?.id;
+  if (!id) return;
+  import('vue-router').then(({ useRouter }: any) => {
+    const router = useRouter();
+    router.push(`/courses/detail/${id}`);
+  });
 }
 
 function onPageChange(p: number) {
