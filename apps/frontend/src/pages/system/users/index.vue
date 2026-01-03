@@ -21,10 +21,16 @@
         placeholder="状态"
         style="max-width: 180px"
       />
-      <n-button type="primary" @click="fetchUsers"
+      <n-button
+        type="primary"
+        @click="fetchUsers"
+        :loading="isLoading"
         >搜索</n-button
       >
-      <n-button type="success" @click="openCreate"
+      <n-button
+        type="success"
+        @click="openCreate"
+        :disabled="isLoading"
         >新增用户</n-button
       >
     </n-el>
@@ -33,6 +39,7 @@
       :data="rows"
       :pagination="pagination"
       :remote="true"
+      @on-edit="openEdit"
     />
 
     <n-modal v-model:show="showForm">
@@ -46,7 +53,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import {
+  ref,
+  onMounted,
+  computed,
+  onBeforeUnmount,
+} from 'vue';
 import {
   NInput,
   NSelect,
@@ -89,9 +101,21 @@ const total = ref(0);
 const rows = ref<any[]>([]);
 const showForm = ref(false);
 const editing = ref<any | null>(null);
+const isLoading = ref(false); // 添加加载状态
+
+// 监听编辑事件
+function handleUserEdit(event: CustomEvent) {
+  openEdit(event.detail);
+}
+
+// 监听删除成功事件，刷新列表
+function handleUserDeleted() {
+  fetchUsers();
+}
 
 async function fetchUsers() {
   try {
+    isLoading.value = true;
     const res = await call<PaginatedResponse<User>>(
       RPC.Admin.ListUsers,
       {
@@ -104,9 +128,14 @@ async function fetchUsers() {
     );
     rows.value = res?.data || [];
     total.value = res?.pagination?.total || 0;
-  } catch {
+  } catch (error: any) {
+    message.error(
+      `获取用户列表失败：${error.message || '未知错误'}`
+    );
     rows.value = [];
     total.value = 0;
+  } finally {
+    isLoading.value = false;
   }
 }
 
@@ -170,5 +199,26 @@ function onSubmit(payload: any) {
   }
 }
 
-onMounted(fetchUsers);
+onMounted(() => {
+  fetchUsers();
+  window.addEventListener(
+    'user-edit',
+    handleUserEdit as EventListener
+  );
+  window.addEventListener(
+    'user-deleted',
+    handleUserDeleted as EventListener
+  );
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener(
+    'user-edit',
+    handleUserEdit as EventListener
+  );
+  window.removeEventListener(
+    'user-deleted',
+    handleUserDeleted as EventListener
+  );
+});
 </script>

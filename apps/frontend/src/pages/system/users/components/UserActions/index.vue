@@ -9,16 +9,21 @@
 
 <script setup lang="ts">
 import { NButton, useDialog, useMessage } from 'naive-ui';
+import { call } from '@api/rpc';
+import { RPC } from '@packages/shared-types';
+
 const props = defineProps<{ row: any }>();
 const emit = defineEmits<{
   (e: 'edit', payload: any): void;
 }>();
 const dialog = useDialog();
 const message = useMessage();
+
 function edit() {
   emit('edit', props.row);
 }
-function softDelete() {
+
+async function softDelete() {
   dialog.warning({
     title: '确认删除',
     content: '将该用户设为停用（删除）？',

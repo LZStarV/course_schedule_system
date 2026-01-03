@@ -85,6 +85,7 @@ export class AdminService {
     role: string;
     status: string;
     password: string;
+    real_name: string;
   }) {
     const { v4: uuidv4 } = await import('uuid');
     const id = uuidv4();
@@ -94,8 +95,8 @@ export class AdminService {
       .update(payload.password)
       .digest('hex');
     await this.sequelize.query(
-      `INSERT INTO users (id, username, email, role, status, password_hash, created_at, updated_at)
-       VALUES (:id, :username, :email, :role, :status, :password_hash, NOW(), NOW())`,
+      `INSERT INTO users (id, username, email, role, status, password_hash, real_name, created_at, updated_at)
+       VALUES (:id, :username, :email, :role, :status, :password_hash, :real_name, NOW(), NOW())`,
       {
         replacements: {
           id,
@@ -104,6 +105,7 @@ export class AdminService {
           role: payload.role,
           status: payload.status,
           password_hash: hash,
+          real_name: payload.real_name,
         },
       }
     );
@@ -116,24 +118,42 @@ export class AdminService {
     role?: string;
     status?: string;
     password?: string;
+    real_name?: string;
   }) {
     const sets: string[] = [];
     const replacements: Record<string, unknown> = {
       id: payload.id,
     };
-    if (payload.email) {
+    // 只有当字段值存在且不为空字符串时，才更新该字段
+    if (
+      payload.email !== undefined &&
+      payload.email !== ''
+    ) {
       sets.push('email = :email');
       replacements.email = payload.email;
     }
-    if (payload.role) {
+    if (payload.role !== undefined && payload.role !== '') {
       sets.push('role = :role');
       replacements.role = payload.role;
     }
-    if (payload.status) {
+    if (
+      payload.status !== undefined &&
+      payload.status !== ''
+    ) {
       sets.push('status = :status');
       replacements.status = payload.status;
     }
-    if (payload.password) {
+    if (
+      payload.real_name !== undefined &&
+      payload.real_name !== ''
+    ) {
+      sets.push('real_name = :real_name');
+      replacements.real_name = payload.real_name;
+    }
+    if (
+      payload.password !== undefined &&
+      payload.password !== ''
+    ) {
       const crypto = await import('node:crypto');
       replacements.password_hash = crypto
         .createHash('sha256')

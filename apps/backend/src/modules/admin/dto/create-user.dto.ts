@@ -4,6 +4,8 @@ export class CreateUserDto {
   @IsString()
   username!: string;
   @IsString()
+  real_name!: string;
+  @IsString()
   email!: string;
   @IsString()
   role!: string;
