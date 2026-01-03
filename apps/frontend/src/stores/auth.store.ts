@@ -61,7 +61,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // 登录认证
-  async function login(username: string, password: string) {
+  async function login(email: string, password: string) {
     const res = await call<{
       token: string;
       refreshToken: string;
@@ -70,7 +70,7 @@ export const useAuthStore = defineStore('auth', () => {
         username: string;
         role: keyof typeof UserRole;
       };
-    }>(RPC.Auth.Login, { username, password });
+    }>(RPC.Auth.Login, { email, password });
     token.value = res.token;
     refreshToken.value = res.refreshToken;
     localStorage.setItem('access_token', token.value);

@@ -15,7 +15,7 @@ export class AuthController {
   async login(params: Record<string, unknown>) {
     const dto = validateDto(LoginDto, params);
     return await this.service.login({
-      username: dto.username,
+      email: dto.email,
       password: dto.password,
     });
   }

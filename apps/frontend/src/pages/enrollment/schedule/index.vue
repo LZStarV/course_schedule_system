@@ -1,8 +1,25 @@
 <template>
   <n-el type="div">
-    <n-alert type="info" title="我的课表"
-      >分页展示课表（后端接口补充后切换为真实数据）。</n-alert
+    <n-el
+      type="div"
+      style="display: flex; gap: 12px; margin-bottom: 12px"
     >
+      <n-input
+        v-model:value="filters.academic_year"
+        placeholder="学年（如 2025-2026）"
+        style="max-width: 200px"
+      />
+      <n-input
+        v-model:value="filters.semester"
+        placeholder="学期（如 FALL/SPRING）"
+        style="max-width: 200px"
+      />
+      <n-button
+        type="primary"
+        @click="fetchMySchedule(true)"
+        >查询</n-button
+      >
+    </n-el>
     <n-data-table
       :columns="columns"
       :data="rows"
@@ -28,7 +45,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import {
-  NAlert,
+  NInput,
+  NButton,
   NDataTable,
   NEl,
   NPagination,
@@ -40,6 +58,10 @@ const page = ref(1);
 const pageSize = ref(10);
 const total = ref(0);
 const rows = ref<any[]>([]);
+const filters = ref<{
+  academic_year?: string;
+  semester?: string;
+}>({});
 const columns = [
   {
     title: '课程名称',
@@ -54,14 +76,19 @@ const columns = [
   { title: '地点', key: 'location' },
 ];
 
-async function fetchMySchedule() {
+async function fetchMySchedule(showMsg = false) {
   try {
     const res = await call<any>(RPC.Enrollment.ListMy, {
+      academic_year: filters.value.academic_year,
+      semester: filters.value.semester,
       page: page.value,
       page_size: pageSize.value,
     });
     rows.value = res?.data || [];
     total.value = res?.pagination?.total || 0;
+    if (showMsg) {
+      // no-op: naive-ui message 可选提示，此处保持简洁
+    }
   } catch {
     rows.value = [];
     total.value = 0;

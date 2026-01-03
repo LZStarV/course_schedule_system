@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Sequelize } from 'sequelize-typescript';
 import { v4 as uuidv4 } from 'uuid';
-import { seedDefaults } from '../seed-config';
 
 @Injectable()
 export class FixedUsersSeedService {
   async run(sequelize: Sequelize) {
     const csDept = await this.getDept(sequelize, 'CS');
     await this.ensureUser(sequelize, {
-      username: 'admin001',
-      email: `admin001@${seedDefaults.emailDomain}`,
+      username: '管理员',
+      email: `admin001@test.edu`,
       real_name: '管理员',
       role: 'ADMIN',
       department_id: null,
@@ -17,8 +16,8 @@ export class FixedUsersSeedService {
       student_id: null,
     });
     await this.ensureUser(sequelize, {
-      username: 'teacher001',
-      email: `teacher001@${seedDefaults.emailDomain}`,
+      username: '教师',
+      email: `teacher001@test.edu`,
       real_name: '教师',
       role: 'TEACHER',
       department_id: csDept,
@@ -26,8 +25,8 @@ export class FixedUsersSeedService {
       student_id: null,
     });
     await this.ensureUser(sequelize, {
-      username: 'student001',
-      email: `student001@${seedDefaults.emailDomain}`,
+      username: '学生',
+      email: `student001@test.edu`,
       real_name: '学生',
       role: 'STUDENT',
       department_id: csDept,
@@ -60,19 +59,24 @@ export class FixedUsersSeedService {
     }
   ) {
     const id = uuidv4();
+    const crypto = await import('node:crypto');
+    const password_hash = crypto
+      .createHash('sha256')
+      .update('a123456')
+      .digest('hex');
     await sequelize.query(
       `INSERT INTO users(
         id, username, email, real_name, gender, password_hash,
         role, status, department_id, teacher_id, student_id,
         created_at, updated_at
       ) SELECT
-        :id, :username, :email, :real_name, 'SECRET', crypt('a123456', gen_salt('bf')),
+        :id, :username, :email, :real_name, 'SECRET', :password_hash,
         :role, 'ACTIVE', :department_id, :teacher_id, :student_id,
         NOW(), NOW()
       WHERE NOT EXISTS (
         SELECT 1 FROM users WHERE username=:username
       )`,
-      { replacements: { id, ...u } }
+      { replacements: { id, ...u, password_hash } }
     );
   }
 }

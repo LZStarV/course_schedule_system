@@ -25,7 +25,19 @@ function softDelete() {
     positiveText: '确定',
     negativeText: '取消',
     onPositiveClick() {
-      message.success('已设置为停用，后端接口待补齐');
+      import('@api/rpc').then(({ call }: any) => {
+        import('@packages/shared-types').then(
+          ({ RPC }: any) => {
+            call(RPC.Admin.DeleteUser, { id: props.row.id })
+              .then(() => {
+                message.success('已设置为停用');
+              })
+              .catch((err: any) => {
+                message.error(err?.message || '操作失败');
+              });
+          }
+        );
+      });
     },
   });
 }

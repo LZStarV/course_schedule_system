@@ -30,6 +30,15 @@ class UpdateScoreDto {
   notes?: string;
 }
 
+import { IsString } from 'class-validator';
+
+class ListMyGradesDto {
+  @IsOptional() @IsNumber() page?: number;
+  @IsOptional() @IsNumber() page_size?: number;
+  @IsOptional() @IsString() academic_year?: string;
+  @IsOptional() @IsString() semester?: string;
+}
+
 @Injectable()
 export class EnrollmentController {
   constructor(
@@ -45,12 +54,20 @@ export class EnrollmentController {
     });
   }
 
-  async listMy(params: Record<string, unknown>) {
+  async listMy(
+    params: Record<string, unknown>,
+    context?: Record<string, unknown>
+  ) {
     const dto = validateDto(ListMyDto, params);
-    return await this.service.listMy({
-      page: dto.page,
-      page_size: dto.page_size,
-    });
+    return await this.service.listMy(
+      {
+        page: dto.page,
+        page_size: dto.page_size,
+        academic_year: (dto as any).academic_year,
+        semester: (dto as any).semester,
+      },
+      context
+    );
   }
 
   async listByCourse(params: Record<string, unknown>) {
@@ -69,5 +86,21 @@ export class EnrollmentController {
       score: (dto as any).score,
       notes: (dto as any).notes,
     });
+  }
+
+  async listMyGrades(
+    params: Record<string, unknown>,
+    context?: Record<string, unknown>
+  ) {
+    const dto = validateDto(ListMyGradesDto, params);
+    return await this.service.listMyGrades(
+      {
+        page: (dto as any).page,
+        page_size: (dto as any).page_size,
+        academic_year: (dto as any).academic_year,
+        semester: (dto as any).semester,
+      },
+      context
+    );
   }
 }

@@ -13,4 +13,11 @@ export class StatsTeachingController {
   ) {
     return await this.service.get(context);
   }
+
+  async details(
+    _params: Record<string, unknown>,
+    context?: Record<string, unknown>
+  ) {
+    return await this.service.details(context);
+  }
 }

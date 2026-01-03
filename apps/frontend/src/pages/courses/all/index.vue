@@ -107,7 +107,7 @@ async function fetch(showMsg = false) {
     duration: 0,
   });
   try {
-    const res = await call(RPC.Course.ListForStudent, {
+    const res: any = await call(RPC.Course.ListForStudent, {
       keyword: filters.value.keyword,
       credit: filters.value.credit,
       department_id: filters.value.department_id,

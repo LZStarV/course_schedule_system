@@ -1,4 +1,8 @@
-import { IsOptional, IsNumber } from 'class-validator';
+import {
+  IsOptional,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 
 export class ListMyDto {
   @IsOptional()
@@ -8,4 +12,12 @@ export class ListMyDto {
   @IsOptional()
   @IsNumber()
   page_size?: number;
+
+  @IsOptional()
+  @IsString()
+  academic_year?: string;
+
+  @IsOptional()
+  @IsString()
+  semester?: string;
 }

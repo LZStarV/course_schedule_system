@@ -158,24 +158,32 @@ export class BulkSeedService {
         const emailLocal = `t_${deptCode}_${String(t).padStart(5, '0')}`;
         const email = `${emailLocal}@${seedDefaults.emailDomain}`;
         const id = uuidv4();
-        await sequelize.query(
-          `INSERT INTO users(
-            id, username, email, real_name, gender, password_hash,
-            role, status, department_id, created_at, updated_at
-          ) SELECT
-            :id, :username, :email, :real_name, 'SECRET', crypt('a123456', gen_salt('bf')),
-            'TEACHER', 'ACTIVE', :department_id, NOW(), NOW()
-          WHERE NOT EXISTS (SELECT 1 FROM users WHERE username=:username)`,
-          {
-            replacements: {
-              id,
-              username,
-              email,
-              real_name: realName,
-              department_id: deptId,
-            },
-          }
-        );
+        {
+          const crypto = await import('node:crypto');
+          const password_hash = crypto
+            .createHash('sha256')
+            .update('a123456')
+            .digest('hex');
+          await sequelize.query(
+            `INSERT INTO users(
+              id, username, email, real_name, gender, password_hash,
+              role, status, department_id, created_at, updated_at
+            ) SELECT
+              :id, :username, :email, :real_name, 'SECRET', :password_hash,
+              'TEACHER', 'ACTIVE', :department_id, NOW(), NOW()
+            WHERE NOT EXISTS (SELECT 1 FROM users WHERE username=:username)`,
+            {
+              replacements: {
+                id,
+                username,
+                email,
+                real_name: realName,
+                department_id: deptId,
+                password_hash,
+              },
+            }
+          );
+        }
         const [urow]: any = await sequelize.query(
           `SELECT id FROM users WHERE username=:username`,
           { replacements: { username } }
@@ -196,24 +204,32 @@ export class BulkSeedService {
         const emailLocal = `s_${deptCode}_${String(s).padStart(6, '0')}`;
         const email = `${emailLocal}@${seedDefaults.emailDomain}`;
         const id = uuidv4();
-        await sequelize.query(
-          `INSERT INTO users(
-            id, username, email, real_name, gender, password_hash,
-            role, status, department_id, created_at, updated_at
-          ) SELECT
-            :id, :username, :email, :real_name, 'SECRET', crypt('a123456', gen_salt('bf')),
-            'STUDENT', 'ACTIVE', :department_id, NOW(), NOW()
-          WHERE NOT EXISTS (SELECT 1 FROM users WHERE username=:username)`,
-          {
-            replacements: {
-              id,
-              username,
-              email,
-              real_name: realName,
-              department_id: deptId,
-            },
-          }
-        );
+        {
+          const crypto = await import('node:crypto');
+          const password_hash = crypto
+            .createHash('sha256')
+            .update('a123456')
+            .digest('hex');
+          await sequelize.query(
+            `INSERT INTO users(
+              id, username, email, real_name, gender, password_hash,
+              role, status, department_id, created_at, updated_at
+            ) SELECT
+              :id, :username, :email, :real_name, 'SECRET', :password_hash,
+              'STUDENT', 'ACTIVE', :department_id, NOW(), NOW()
+            WHERE NOT EXISTS (SELECT 1 FROM users WHERE username=:username)`,
+            {
+              replacements: {
+                id,
+                username,
+                email,
+                real_name: realName,
+                department_id: deptId,
+                password_hash,
+              },
+            }
+          );
+        }
         const [srow]: any = await sequelize.query(
           `SELECT id FROM users WHERE username=:username`,
           { replacements: { username } }

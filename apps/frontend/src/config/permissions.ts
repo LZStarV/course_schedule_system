@@ -250,14 +250,6 @@ export function getSidebarByRole(role: UserRole) {
           operations: { view: true, export: true },
         },
         {
-          id: 'teaching_stats',
-          code: 'teaching_stats',
-          name: '教学数据',
-          icon: 'edit_note',
-          path: '/statistics/teaching',
-          operations: { view: true, export: true },
-        },
-        {
           id: 'user_stats',
           code: 'user_stats',
           name: '用户统计',

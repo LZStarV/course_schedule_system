@@ -15,6 +15,7 @@ export const RPC = {
     ListMy: 'Enrollment.ListMy',
     ListByCourse: 'Enrollment.ListByCourse',
     UpdateScore: 'Enrollment.UpdateScore',
+    ListMyGrades: 'Enrollment.ListMyGrades',
   },
   Admin: {
     SetSelectTime: 'Admin.SetSelectTime',
@@ -67,9 +68,11 @@ export const RPC = {
   },
   StatsSystem: {
     Get: 'StatsSystem.Get',
+    Details: 'StatsSystem.Details',
   },
   StatsTeaching: {
     Get: 'StatsTeaching.Get',
+    Details: 'StatsTeaching.Details',
   },
   StatsUsers: {
     Get: 'StatsUsers.Get',

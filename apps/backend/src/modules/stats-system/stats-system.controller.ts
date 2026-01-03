@@ -10,4 +10,8 @@ export class StatsSystemController {
   async get() {
     return await this.service.get();
   }
+
+  async details() {
+    return await this.service.details();
+  }
 }

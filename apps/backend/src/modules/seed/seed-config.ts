@@ -72,10 +72,10 @@ export const seedConfig: {
     { code: 'SUPER_ADMIN', name: '超级管理员' },
   ],
   admin: {
-    username: 'superadmin',
-    email: 'admin@course-select.edu',
+    username: '超级管理员',
+    email: 'superadmin@test.edu',
     phone: '13800138000',
-    real_name: '系统管理员',
+    real_name: '超级管理员',
     teacher_id: 'T000001',
   },
   departments: [

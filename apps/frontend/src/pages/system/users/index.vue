@@ -132,10 +132,42 @@ function openCreate() {
   editing.value = null;
   showForm.value = true;
 }
-function onSubmit() {
-  message.success('已提交，后端接口待补齐');
-  showForm.value = false;
-  fetchUsers();
+function onSubmit(payload: any) {
+  if (!editing.value) {
+    // 创建
+    call(RPC.Admin.CreateUser, {
+      username: payload?.username,
+      email: payload?.email,
+      role: payload?.role,
+      status: payload?.status,
+      password: payload?.password,
+    })
+      .then(() => {
+        message.success('创建成功');
+        showForm.value = false;
+        fetchUsers();
+      })
+      .catch((err: any) => {
+        message.error(err?.message || '创建失败');
+      });
+  } else {
+    // 更新
+    call(RPC.Admin.UpdateUser, {
+      id: (editing.value as any)?.id,
+      email: payload?.email,
+      role: payload?.role,
+      status: payload?.status,
+      password: payload?.password,
+    })
+      .then(() => {
+        message.success('更新成功');
+        showForm.value = false;
+        fetchUsers();
+      })
+      .catch((err: any) => {
+        message.error(err?.message || '更新失败');
+      });
+  }
 }
 
 onMounted(fetchUsers);
