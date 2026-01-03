@@ -52,6 +52,19 @@ export class BulkSeedService {
       sequelize,
       courseIdsByDeptTerm
     );
+    await this.seedAnnouncements(
+      sequelize,
+      courseIdsByDeptTerm
+    );
+    await this.seedMaterials(
+      sequelize,
+      courseIdsByDeptTerm
+    );
+    await this.seedFavorites(
+      sequelize,
+      studentIdsByDept,
+      courseIdsByDeptTerm
+    );
     await this.seedEnrollments(
       sequelize,
       cfg,
@@ -158,24 +171,32 @@ export class BulkSeedService {
         const emailLocal = `t_${deptCode}_${String(t).padStart(5, '0')}`;
         const email = `${emailLocal}@${seedDefaults.emailDomain}`;
         const id = uuidv4();
-        await sequelize.query(
-          `INSERT INTO users(
-            id, username, email, real_name, gender, password_hash,
-            role, status, department_id, created_at, updated_at
-          ) SELECT
-            :id, :username, :email, :real_name, 'SECRET', crypt('a123456', gen_salt('bf')),
-            'TEACHER', 'ACTIVE', :department_id, NOW(), NOW()
-          WHERE NOT EXISTS (SELECT 1 FROM users WHERE username=:username)`,
-          {
-            replacements: {
-              id,
-              username,
-              email,
-              real_name: realName,
-              department_id: deptId,
-            },
-          }
-        );
+        {
+          const crypto = await import('node:crypto');
+          const password_hash = crypto
+            .createHash('sha256')
+            .update('a123456')
+            .digest('hex');
+          await sequelize.query(
+            `INSERT INTO users(
+              id, username, email, real_name, gender, password_hash,
+              role, status, department_id, created_at, updated_at
+            ) SELECT
+              :id, :username, :email, :real_name, 'SECRET', :password_hash,
+              'TEACHER', 'ACTIVE', :department_id, NOW(), NOW()
+            WHERE NOT EXISTS (SELECT 1 FROM users WHERE email=:email OR username=:username)`,
+            {
+              replacements: {
+                id,
+                username,
+                email,
+                real_name: realName,
+                department_id: deptId,
+                password_hash,
+              },
+            }
+          );
+        }
         const [urow]: any = await sequelize.query(
           `SELECT id FROM users WHERE username=:username`,
           { replacements: { username } }
@@ -196,24 +217,32 @@ export class BulkSeedService {
         const emailLocal = `s_${deptCode}_${String(s).padStart(6, '0')}`;
         const email = `${emailLocal}@${seedDefaults.emailDomain}`;
         const id = uuidv4();
-        await sequelize.query(
-          `INSERT INTO users(
-            id, username, email, real_name, gender, password_hash,
-            role, status, department_id, created_at, updated_at
-          ) SELECT
-            :id, :username, :email, :real_name, 'SECRET', crypt('a123456', gen_salt('bf')),
-            'STUDENT', 'ACTIVE', :department_id, NOW(), NOW()
-          WHERE NOT EXISTS (SELECT 1 FROM users WHERE username=:username)`,
-          {
-            replacements: {
-              id,
-              username,
-              email,
-              real_name: realName,
-              department_id: deptId,
-            },
-          }
-        );
+        {
+          const crypto = await import('node:crypto');
+          const password_hash = crypto
+            .createHash('sha256')
+            .update('a123456')
+            .digest('hex');
+          await sequelize.query(
+            `INSERT INTO users(
+              id, username, email, real_name, gender, password_hash,
+              role, status, department_id, created_at, updated_at
+            ) SELECT
+              :id, :username, :email, :real_name, 'SECRET', :password_hash,
+              'STUDENT', 'ACTIVE', :department_id, NOW(), NOW()
+            WHERE NOT EXISTS (SELECT 1 FROM users WHERE email=:email OR username=:username)`,
+            {
+              replacements: {
+                id,
+                username,
+                email,
+                real_name: realName,
+                department_id: deptId,
+                password_hash,
+              },
+            }
+          );
+        }
         const [srow]: any = await sequelize.query(
           `SELECT id FROM users WHERE username=:username`,
           { replacements: { username } }
@@ -393,7 +422,7 @@ export class BulkSeedService {
         for (let i = 0; i < count; i++) {
           const weekday = faker.number.int({
             min: 1,
-            max: 7,
+            max: 5,
           });
           const block = faker.helpers.arrayElement(blocks);
           const uniq = `${weekday}-${block.start}-${block.end}`;
@@ -474,6 +503,7 @@ export class BulkSeedService {
     const allCourses: string[] = Object.values(
       courseIdsByDeptTerm
     ).flat();
+    // 工作日已在 seedSchedules 中限定为 1-5
     if (!allCourses.length) return;
     const total =
       Object.values(studentIdsByDept).reduce(
@@ -484,7 +514,7 @@ export class BulkSeedService {
     for (const deptId of Object.keys(studentIdsByDept)) {
       const students = studentIdsByDept[deptId];
       for (const sid of students) {
-        const count = cfg.enrollmentsPerStudent;
+        const count = faker.number.int({ min: 3, max: 5 });
         const chosen = new Set<string>();
         for (let i = 0; i < count; i++) {
           const cid =
@@ -533,6 +563,139 @@ export class BulkSeedService {
           }
           done++;
           this.reporter!.update('enrollments', done, total);
+        }
+      }
+    }
+  }
+
+  private async seedAnnouncements(
+    sequelize: Sequelize,
+    courseIdsByDeptTerm: Record<string, string[]>
+  ) {
+    this.log.info('seed announcements');
+    for (const key of Object.keys(courseIdsByDeptTerm)) {
+      for (const cid of courseIdsByDeptTerm[key]) {
+        const count = faker.number.int({ min: 1, max: 2 });
+        for (let i = 0; i < count; i++) {
+          const status = faker.helpers.arrayElement([
+            'DRAFT',
+            'PUBLISHED',
+          ]);
+          await sequelize.query(
+            `INSERT INTO course_announcements(id, course_id, title, content, category, status, published_at, created_at, updated_at)
+             SELECT uuid_generate_v4(), :course_id, :title, :content, :category, :status,
+               CASE WHEN :status = 'PUBLISHED' THEN NOW() ELSE NULL END,
+               NOW(), NOW()
+             WHERE NOT EXISTS (
+               SELECT 1 FROM course_announcements WHERE course_id=:course_id AND title=:title
+             )`,
+            {
+              replacements: {
+                course_id: cid,
+                title:
+                  faker.word.words({
+                    count: { min: 1, max: 3 },
+                  }) + '公告',
+                content: faker.lorem.sentences({
+                  min: 1,
+                  max: 3,
+                }),
+                category: faker.helpers.arrayElement([
+                  '通知',
+                  '作业',
+                  '考试',
+                ]),
+                status,
+              },
+            }
+          );
+        }
+      }
+    }
+  }
+
+  private async seedMaterials(
+    sequelize: Sequelize,
+    courseIdsByDeptTerm: Record<string, string[]>
+  ) {
+    this.log.info('seed materials');
+    for (const key of Object.keys(courseIdsByDeptTerm)) {
+      for (const cid of courseIdsByDeptTerm[key]) {
+        await sequelize.query(
+          `INSERT INTO course_materials(id, course_id, file_name, file_url, file_type, file_size, category, description, permissions, uploaded_by, created_at, updated_at)
+           SELECT uuid_generate_v4(), :course_id, :file_name, :file_url, :file_type, :file_size, :category, :description, 'PUBLIC', NULL, NOW(), NOW()
+           WHERE NOT EXISTS (
+             SELECT 1 FROM course_materials WHERE course_id=:course_id AND file_name=:file_name
+           )`,
+          {
+            replacements: {
+              course_id: cid,
+              file_name: '课程资料示例.pdf',
+              file_url:
+                'https://example.com/materials/sample.pdf',
+              file_type: 'pdf',
+              file_size: 1024,
+              category: '讲义',
+              description: '示例讲义文件',
+            },
+          }
+        );
+      }
+    }
+  }
+
+  private async seedFavorites(
+    sequelize: Sequelize,
+    studentIdsByDept: Record<string, string[]>,
+    courseIdsByDeptTerm: Record<string, string[]>
+  ) {
+    this.log.info('seed favorites');
+    const [exists]: any = await sequelize.query(
+      `SELECT to_regclass('course_favorites') AS ok`
+    );
+    if (!exists?.[0]?.ok) {
+      this.log.info('skip favorites: table not exists');
+      return;
+    }
+    const allCourses: string[] = Object.values(
+      courseIdsByDeptTerm
+    ).flat();
+    for (const deptId of Object.keys(studentIdsByDept)) {
+      const students = studentIdsByDept[deptId];
+      for (const sid of students) {
+        const favCount = faker.number.int({
+          min: 2,
+          max: 3,
+        });
+        const chosen = new Set<string>();
+        for (let i = 0; i < favCount; i++) {
+          const cid =
+            faker.helpers.arrayElement(allCourses);
+          if (chosen.has(cid)) continue;
+          chosen.add(cid);
+          try {
+            await sequelize.query(
+              `INSERT INTO course_favorites(id, user_id, course_id, category, created_at)
+               SELECT uuid_generate_v4(), :user_id, :course_id, :category, NOW()
+               WHERE NOT EXISTS (
+                 SELECT 1 FROM course_favorites WHERE user_id=:user_id AND course_id=:course_id
+               )`,
+              {
+                replacements: {
+                  user_id: sid,
+                  course_id: cid,
+                  category: '收藏',
+                },
+              }
+            );
+          } catch (e: any) {
+            // eslint-disable-next-line no-console
+            console.error('Insert favorite failed', {
+              sid,
+              cid,
+              err: e?.message || String(e),
+            });
+          }
         }
       }
     }

@@ -63,18 +63,27 @@ pnpm -F @apps/frontend format
 
 ## 测试账号（开发联调）
 
-- 管理员（SUPER_ADMIN）
-  - 用户名：superadmin
+- 超级管理员（SUPER_ADMIN）
+  - 显示用户名：超级管理员
+  - 登录邮箱：superadmin@test.edu
   - 密码：a123456
-  - 邮箱：admin@course-select.edu
   - 说明：登录后具备系统管理权限，权限菜单由 Auth.GetPermissions 返回（包含用户管理、选课规则等）。
 
 - 固定测试用户（便于检查各角色）
-  - 管理员（ADMIN）：admin001 / a123456
-  - 教师（TEACHER）：teacher001 / a123456
-  - 学生（STUDENT）：student001 / a123456
+  - 管理员（ADMIN）：
+    - 显示用户名：管理员
+    - 登录邮箱：admin001@test.edu
+    - 密码：a123456
+  - 教师（TEACHER）：
+    - 显示用户名：教师
+    - 登录邮箱：teacher001@test.edu
+    - 密码：a123456
+  - 学生（STUDENT）：
+    - 显示用户名：学生
+    - 登录邮箱：student001@test.edu
+    - 密码：a123456
 
-提示：当前 AuthService 仅按用户名查找并签发 JWT，不做密码校验；后续启用密码哈希校验后将更新此说明。
+说明：系统采用邮箱登录；密码统一使用 SHA-256 校验（种子数据均为 a123456）。停用用户无法登录并提示“该用户已被停用”。
 
 ## 配置说明
 

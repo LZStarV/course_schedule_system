@@ -29,21 +29,20 @@ async function softDelete() {
     content: '将该用户设为停用（删除）？',
     positiveText: '确定',
     negativeText: '取消',
-    async onPositiveClick() {
-      try {
-        await call(RPC.Admin.DeleteUser, {
-          id: props.row.id,
-        });
-        message.success('用户删除成功');
-        // 触发父组件更新
-        window.dispatchEvent(
-          new CustomEvent('user-deleted')
+    onPositiveClick() {
+      import('@api/rpc').then(({ call }: any) => {
+        import('@packages/shared-types').then(
+          ({ RPC }: any) => {
+            call(RPC.Admin.DeleteUser, { id: props.row.id })
+              .then(() => {
+                message.success('已设置为停用');
+              })
+              .catch((err: any) => {
+                message.error(err?.message || '操作失败');
+              });
+          }
         );
-      } catch (error: any) {
-        message.error(
-          `删除失败：${error.message || '未知错误'}`
-        );
-      }
+      });
     },
   });
 }

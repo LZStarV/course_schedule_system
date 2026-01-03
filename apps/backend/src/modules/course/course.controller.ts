@@ -32,4 +32,10 @@ export class CourseController {
     const dto = validateDto(ApproveCourseDto, params);
     return await this.service.approve(dto, context);
   }
+
+  async getDetail(params: Record<string, unknown>) {
+    const id = String((params as any).id || '');
+    if (!id) throw new Error('缺少课程ID');
+    return await this.service.getDetail(id);
+  }
 }

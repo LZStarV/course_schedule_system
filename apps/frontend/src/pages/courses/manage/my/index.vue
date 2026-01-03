@@ -1,8 +1,29 @@
 <template>
   <n-el type="div">
-    <n-alert type="info" title="我的课程"
-      >分页展示教师课程列表（后端接口补充后切换为真实数据）。</n-alert
+    <n-el
+      type="div"
+      style="display: flex; gap: 12px; margin-bottom: 12px"
     >
+      <n-input
+        v-model:value="filters.academic_year"
+        placeholder="学年（如 2025-2026）"
+        style="max-width: 200px"
+      />
+      <n-input
+        v-model:value="filters.semester"
+        placeholder="学期（FALL/SPRING）"
+        style="max-width: 200px"
+      />
+      <n-select
+        v-model:value="filters.status"
+        :options="statusOptions"
+        placeholder="状态"
+        style="max-width: 200px"
+      />
+      <n-button type="primary" @click="fetchMyCourses(true)"
+        >查询</n-button
+      >
+    </n-el>
     <n-data-table
       :columns="columns"
       :data="rows"
@@ -28,7 +49,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import {
-  NAlert,
+  NInput,
+  NSelect,
+  NButton,
   NDataTable,
   NEl,
   NPagination,
@@ -42,6 +65,11 @@ import type {
 import { useUserStore } from '@stores/user.store';
 
 const userStore = useUserStore();
+const filters = ref<{
+  academic_year?: string;
+  semester?: string;
+  status?: string;
+}>({});
 const page = ref(1);
 const pageSize = ref(10);
 const total = ref(0);
@@ -50,20 +78,39 @@ const columns = [
   { title: '课程名称', key: 'name' },
   { title: '学分', key: 'credit' },
   { title: '状态', key: 'status' },
+  { title: '学年', key: 'academic_year' },
+  { title: '学期', key: 'semester' },
+  { title: '选课数', key: 'enrolled_count' },
+];
+const statusOptions = [
+  { label: '草稿', value: 'DRAFT' },
+  { label: '已发布', value: 'PUBLISHED' },
+  { label: '待审核', value: 'PENDING_REVIEW' },
+  { label: '已通过', value: 'APPROVED' },
+  { label: '已拒绝', value: 'REJECTED' },
+  { label: '归档', value: 'ARCHIVED' },
 ];
 
-async function fetchMyCourses() {
+async function fetchMyCourses(showMsg = false) {
   try {
     const res = await call<PaginatedResponse<Course>>(
       RPC.Course.ListByTeacher,
       {
         teacher_id: userStore.user?.id || '',
+        academic_year: filters.value.academic_year,
+        semester: filters.value.semester,
+        status: filters.value.status
+          ? [filters.value.status]
+          : undefined,
         page: page.value,
         page_size: pageSize.value,
       }
     );
     rows.value = res?.data || [];
     total.value = res?.pagination?.total || 0;
+    if (showMsg) {
+      /* 保持简洁，无提示 */
+    }
   } catch {
     rows.value = [];
     total.value = 0;

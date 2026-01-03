@@ -1,39 +1,102 @@
+import { DataTypes, QueryInterface } from 'sequelize';
+
 export const up = async ({ context }: any) => {
-  const qi = context?.queryInterface ?? context;
-  const sequelize = context?.sequelize ?? qi?.sequelize;
+  const qi: QueryInterface = (context?.queryInterface ??
+    context) as any;
+  const sequelize =
+    (qi as any).sequelize ?? context?.sequelize;
   const [exists]: any = await sequelize.query(
     `SELECT to_regclass('course_materials') AS ok`
   );
   if (!exists?.[0]?.ok) {
-    await sequelize.query(`
-      CREATE TABLE course_materials (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        course_id UUID NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
-        file_name VARCHAR(255) NOT NULL,
-        file_url TEXT NOT NULL,
-        file_type VARCHAR(50) NOT NULL,
-        file_size INTEGER NOT NULL,
-        category VARCHAR(50),
-        description TEXT,
-        permissions VARCHAR(20) DEFAULT 'PUBLIC' CHECK (permissions IN ('PUBLIC','PRIVATE','RESTRICTED')),
-        uploaded_by UUID REFERENCES users(id),
-        created_at TIMESTAMP DEFAULT NOW(),
-        updated_at TIMESTAMP DEFAULT NOW()
-      )
-    `);
+    await qi.createTable('course_materials', {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+        allowNull: false,
+      },
+      course_id: { type: DataTypes.UUID, allowNull: false },
+      file_name: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+      },
+      file_url: { type: DataTypes.TEXT, allowNull: false },
+      file_type: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+      },
+      file_size: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      category: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+      },
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      permissions: {
+        type: DataTypes.ENUM(
+          'PUBLIC',
+          'PRIVATE',
+          'RESTRICTED'
+        ),
+        allowNull: false,
+        defaultValue: 'PUBLIC',
+      },
+      uploaded_by: {
+        type: DataTypes.UUID,
+        allowNull: true,
+      },
+      created_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
+      updated_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
+    });
+    await qi.addConstraint('course_materials', {
+      type: 'foreign key',
+      name: 'fk_materials_course',
+      fields: ['course_id'],
+      references: { table: 'courses', field: 'id' },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    });
+    await qi.addConstraint('course_materials', {
+      type: 'foreign key',
+      name: 'fk_materials_uploaded_by',
+      fields: ['uploaded_by'],
+      references: { table: 'users', field: 'id' },
+      onDelete: 'SET NULL',
+      onUpdate: 'CASCADE',
+    });
   }
-  await sequelize.query(
-    `CREATE INDEX IF NOT EXISTS course_materials_course_idx ON course_materials(course_id)`
-  );
+  try {
+    await qi.addIndex('course_materials', {
+      name: 'course_materials_course_idx',
+      fields: ['course_id'],
+    });
+  } catch {}
 };
 
 export const down = async ({ context }: any) => {
-  const qi = context?.queryInterface ?? context;
-  const sequelize = context?.sequelize ?? qi?.sequelize;
-  await sequelize.query(
-    `DROP INDEX IF EXISTS course_materials_course_idx`
-  );
-  await sequelize.query(
-    `DROP TABLE IF EXISTS course_materials`
-  );
+  const qi: QueryInterface = (context?.queryInterface ??
+    context) as any;
+  try {
+    await qi.removeIndex(
+      'course_materials',
+      'course_materials_course_idx'
+    );
+  } catch {}
+  try {
+    await qi.dropTable('course_materials');
+  } catch {}
 };

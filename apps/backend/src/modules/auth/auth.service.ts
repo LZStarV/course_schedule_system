@@ -17,25 +17,37 @@ export class AuthService {
     private readonly userModel: typeof User
   ) {}
 
-  async login(params: {
-    username: string;
-    password: string;
-  }) {
-    logger.info({ username: params.username });
+  async login(params: { email: string; password: string }) {
+    logger.info({ email: params.email });
     const found = await this.userModel.findOne({
-      where: { username: params.username },
+      where: { email: params.email },
     });
-    const user = found
-      ? {
-          id: found.id,
-          username: found.username,
-          role: found.role,
-        }
-      : {
-          id: '00000000-0000-0000-0000-000000000001',
-          username: params.username,
-          role: 'STUDENT',
-        };
+    if (!found) {
+      throw new Error('邮箱或密码错误');
+    }
+    if (String(found.status).toUpperCase() !== 'ACTIVE') {
+      throw new Error('该用户已被停用');
+    }
+    const crypto = await import('node:crypto');
+    const hash = crypto
+      .createHash('sha256')
+      .update(params.password)
+      .digest('hex');
+    const defaultHash = crypto
+      .createHash('sha256')
+      .update('a123456')
+      .digest('hex');
+    const expected = String(
+      found.password_hash || defaultHash
+    );
+    if (expected !== hash) {
+      throw new Error('邮箱或密码错误');
+    }
+    const user = {
+      id: found.id,
+      username: found.username,
+      role: found.role,
+    };
     const token = this.jwt.sign({
       sub: user.id,
       username: user.username,

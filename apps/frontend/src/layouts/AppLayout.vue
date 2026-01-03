@@ -1,8 +1,10 @@
 <template>
   <div>
-    <n-layout-header style="height: 64px" bordered>
-      <HeaderBar />
-    </n-layout-header>
+    <n-layout>
+      <n-layout-header style="height: 64px" bordered>
+        <HeaderBar />
+      </n-layout-header>
+    </n-layout>
     <n-layout
       position="absolute"
       style="top: 64px"

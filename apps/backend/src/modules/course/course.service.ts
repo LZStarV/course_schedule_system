@@ -276,4 +276,64 @@ export class CourseService {
       reviewed_by,
     };
   }
+
+  async getDetail(id: string) {
+    const c = await this.courseModel.findOne({
+      where: { id },
+      include: [
+        {
+          model: Department,
+          as: 'department',
+          attributes: ['id', 'name'],
+        },
+        {
+          model: User,
+          as: 'teacher',
+          attributes: ['id', 'username'],
+        },
+      ],
+    });
+    if (!c) throw new Error('课程不存在');
+    const sequelize: any = (this.courseModel as any)
+      .sequelize;
+    const [schedules]: any = await sequelize.query(
+      `SELECT id, weekday, start_time, end_time, location FROM class_schedules WHERE course_id=:id ORDER BY weekday, start_time`,
+      { replacements: { id } }
+    );
+    const [annos]: any = await sequelize.query(
+      `SELECT id, title, status, published_at, created_at FROM course_announcements WHERE course_id=:id ORDER BY COALESCE(published_at, created_at) DESC LIMIT 5`,
+      { replacements: { id } }
+    );
+    const [materials]: any = await sequelize.query(
+      `SELECT id, file_name, file_type, file_size, category, created_at FROM course_materials WHERE course_id=:id ORDER BY created_at DESC LIMIT 10`,
+      { replacements: { id } }
+    );
+    return {
+      id: c.id,
+      course_code: c.course_code,
+      name: c.name,
+      credit: Number(c.credit),
+      credit_hours: c.credit_hours,
+      course_type: c.course_type,
+      academic_year: c.academic_year,
+      semester: c.semester,
+      capacity: c.capacity,
+      min_quota: c.min_quota ?? 1,
+      status: c.status,
+      department: c.department
+        ? { id: c.department.id, name: c.department.name }
+        : null,
+      teacher: c.teacher
+        ? { id: c.teacher.id, username: c.teacher.username }
+        : null,
+      schedule: schedules,
+      announcements: annos,
+      materials,
+      description: c.description ?? null,
+      objectives: c.objectives ?? null,
+      syllabus: c.syllabus ?? null,
+      assessment_method: c.assessment_method ?? null,
+      textbook_reference: c.textbook_reference ?? null,
+    };
+  }
 }

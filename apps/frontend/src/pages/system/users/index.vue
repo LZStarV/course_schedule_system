@@ -161,37 +161,41 @@ function openCreate() {
   editing.value = null;
   showForm.value = true;
 }
-
-function openEdit(row: any) {
-  editing.value = { ...row };
-  showForm.value = true;
-}
-async function onSubmit(formData: any) {
-  try {
-    isLoading.value = true;
-
-    // 根据editing是否存在判断是新增还是更新操作
-    if (editing.value) {
-      // 更新用户
-      await call(RPC.Admin.UpdateUser, {
-        id: editing.value.id,
-        ...formData,
+function onSubmit(payload: any) {
+  if (!editing.value) {
+    // 创建
+    call(RPC.Admin.CreateUser, {
+      username: payload?.username,
+      email: payload?.email,
+      role: payload?.role,
+      status: payload?.status,
+      password: payload?.password,
+    })
+      .then(() => {
+        message.success('创建成功');
+        showForm.value = false;
+        fetchUsers();
+      })
+      .catch((err: any) => {
+        message.error(err?.message || '创建失败');
       });
-      message.success('用户更新成功');
-    } else {
-      // 新增用户
-      await call(RPC.Admin.CreateUser, formData);
-      message.success('用户创建成功');
-    }
-
-    showForm.value = false;
-    await fetchUsers(); // 刷新用户列表
-  } catch (error: any) {
-    message.error(
-      `操作失败：${error.message || '未知错误'}`
-    );
-  } finally {
-    isLoading.value = false;
+  } else {
+    // 更新
+    call(RPC.Admin.UpdateUser, {
+      id: (editing.value as any)?.id,
+      email: payload?.email,
+      role: payload?.role,
+      status: payload?.status,
+      password: payload?.password,
+    })
+      .then(() => {
+        message.success('更新成功');
+        showForm.value = false;
+        fetchUsers();
+      })
+      .catch((err: any) => {
+        message.error(err?.message || '更新失败');
+      });
   }
 }
 

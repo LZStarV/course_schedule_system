@@ -7,6 +7,11 @@ import { seedConfig } from '../seed-config';
 export class AdminSeedService {
   async run(sequelize: Sequelize) {
     const id = uuidv4();
+    const crypto = await import('node:crypto');
+    const password_hash = crypto
+      .createHash('sha256')
+      .update('a123456')
+      .digest('hex');
     const sql = `INSERT INTO users (
       id, username, email, phone, real_name, avatar_url, gender, birth_date,
       student_id, teacher_id, department_id, major, grade, class_name,
@@ -15,7 +20,7 @@ export class AdminSeedService {
     ) VALUES (
       :id, :username, :email, :phone, :real_name, NULL, 'SECRET', NULL,
       NULL, :teacher_id, NULL, NULL, NULL, NULL,
-      crypt('a123456', gen_salt('bf')), 'SUPER_ADMIN', 'ACTIVE', NULL, 0, NULL,
+      :password_hash, 'SUPER_ADMIN', 'ACTIVE', NULL, 0, NULL,
       :created_by, :updated_by, NOW(), NOW()
     ) ON CONFLICT (username) DO NOTHING`;
     await sequelize.query(sql, {
@@ -28,6 +33,7 @@ export class AdminSeedService {
         teacher_id: seedConfig.admin.teacher_id,
         created_by: id,
         updated_by: id,
+        password_hash,
       },
     });
   }

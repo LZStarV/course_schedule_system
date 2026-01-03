@@ -9,12 +9,14 @@ export const RPC = {
     ListForStudent: 'Course.ListForStudent',
     ListByTeacher: 'Course.ListByTeacher',
     Approve: 'Course.Approve',
+    GetDetail: 'Course.GetDetail',
   },
   Enrollment: {
     Add: 'Enrollment.Add',
     ListMy: 'Enrollment.ListMy',
     ListByCourse: 'Enrollment.ListByCourse',
     UpdateScore: 'Enrollment.UpdateScore',
+    ListMyGrades: 'Enrollment.ListMyGrades',
   },
   Admin: {
     SetSelectTime: 'Admin.SetSelectTime',
@@ -67,9 +69,11 @@ export const RPC = {
   },
   StatsSystem: {
     Get: 'StatsSystem.Get',
+    Details: 'StatsSystem.Details',
   },
   StatsTeaching: {
     Get: 'StatsTeaching.Get',
+    Details: 'StatsTeaching.Details',
   },
   StatsUsers: {
     Get: 'StatsUsers.Get',

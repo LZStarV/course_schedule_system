@@ -55,6 +55,8 @@ export class EnrollmentService {
     params: {
       page?: number;
       page_size?: number;
+      academic_year?: string;
+      semester?: string;
     },
     context?: Record<string, unknown>
   ) {
@@ -73,8 +75,15 @@ export class EnrollmentService {
         },
       };
     }
+    const whereEnroll: any = { student_id } as any;
+    if (params.academic_year)
+      whereEnroll.academic_year = String(
+        params.academic_year
+      );
+    if (params.semester)
+      whereEnroll.semester = String(params.semester);
     const enrolls = await this.enrollmentModel.findAll({
-      where: { student_id } as any,
+      where: whereEnroll,
       attributes: ['course_id'],
     });
     const courseIds = Array.from(
@@ -114,6 +123,73 @@ export class EnrollmentService {
         page_size,
         total,
         total_pages: Math.ceil(total / page_size),
+      },
+    };
+  }
+
+  async listMyGrades(
+    params: {
+      page?: number;
+      page_size?: number;
+      academic_year?: string;
+      semester?: string;
+    },
+    context?: Record<string, unknown>
+  ) {
+    const page = Number(params.page ?? 1);
+    const page_size = Number(params.page_size ?? 20);
+    const offset = (page - 1) * page_size;
+    const student_id = (context as any)?.user?.id ?? null;
+    if (!student_id) {
+      return {
+        data: [],
+        pagination: {
+          page,
+          page_size,
+          total: 0,
+          total_pages: 0,
+        },
+      };
+    }
+    const whereEnroll: any = { student_id } as any;
+    if (params.academic_year)
+      whereEnroll.academic_year = String(
+        params.academic_year
+      );
+    if (params.semester)
+      whereEnroll.semester = String(params.semester);
+    const { rows, count } =
+      await this.enrollmentModel.findAndCountAll({
+        where: whereEnroll,
+        offset,
+        limit: page_size,
+        order: [['updated_at', 'DESC']],
+      });
+    const courseIds = Array.from(
+      new Set((rows ?? []).map((e: any) => e.course_id))
+    ).filter(Boolean);
+    const courses = await (
+      this.sequelize as any
+    ).models.Course.findAll({
+      where: { id: courseIds.length ? courseIds : null },
+    });
+    const nameById = new Map<string, string>();
+    for (const c of courses) nameById.set(c.id, c.name);
+    const data = (rows ?? []).map((e: any) => ({
+      course_name: nameById.get(e.course_id) ?? '',
+      academic_year: e.academic_year,
+      semester: e.semester,
+      score: e.score,
+      gpa_points: e.gpa_points,
+      grade: e.grade,
+    }));
+    return {
+      data,
+      pagination: {
+        page,
+        page_size,
+        total: count,
+        total_pages: Math.ceil(count / page_size),
       },
     };
   }

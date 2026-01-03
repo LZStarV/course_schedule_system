@@ -6,8 +6,8 @@
     >
       <n-card title="登录">
         <n-form :model="form" :rules="rules">
-          <n-form-item label="用户名" path="username">
-            <n-input v-model:value="form.username" />
+          <n-form-item label="邮箱" path="email">
+            <n-input v-model:value="form.email" />
           </n-form-item>
           <n-form-item label="密码" path="password">
             <n-input
@@ -51,9 +51,9 @@ const auth = useAuthStore();
 const perm = usePermissionStore();
 const message = useMessage();
 const loading = ref(false);
-const form = ref({ username: '', password: '' });
+const form = ref({ email: '', password: '' });
 const rules = {
-  username: { required: true, message: '请输入用户名' },
+  email: { required: true, message: '请输入邮箱' },
   password: { required: true, message: '请输入密码' },
 } as any;
 
@@ -61,10 +61,7 @@ async function onLogin() {
   loading.value = true;
   const loadingMessage = message.loading('登录中...');
   try {
-    await auth.login(
-      form.value.username,
-      form.value.password
-    );
+    await auth.login(form.value.email, form.value.password);
     const target = perm.roleDefaultPath();
     loadingMessage.destroy();
     message.success('登录成功', { duration: 2000 });

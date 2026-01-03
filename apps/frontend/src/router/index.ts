@@ -15,6 +15,11 @@ const routes = [
     meta: { requiresAuth: true },
     children: loadAutoRoutes(),
   },
+  {
+    path: '/:pathMatch(.*)*',
+    component: () => import('@/pages/not-found/index.vue'),
+    meta: { requiresAuth: false },
+  },
 ];
 
 export const router = createRouter({

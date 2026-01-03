@@ -27,7 +27,9 @@ class PublishDto {
   @IsUUID() id!: string;
 }
 class ListDto {
-  @IsUUID() course_id!: string;
+  @IsOptional() @IsUUID() course_id?: string;
+  @IsOptional() @IsString() teacher_id?: string;
+  @IsOptional() @IsString() keyword?: string;
   @IsOptional() @IsNumber() page?: number;
   @IsOptional() @IsNumber() page_size?: number;
 }

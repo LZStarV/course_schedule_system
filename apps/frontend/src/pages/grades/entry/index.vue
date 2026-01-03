@@ -1,8 +1,30 @@
 <template>
   <n-el type="div">
+    <n-card title="我的课程" style="margin-bottom: 12px">
+      <n-grid :x-gap="12" :y-gap="12" :cols="4">
+        <n-grid-item v-for="c in myCourses" :key="c.id">
+          <n-card>
+            <div style="font-weight: 600">{{ c.name }}</div>
+            <div>选课数：{{ c.enrolled_count ?? 0 }}</div>
+            <n-button
+              size="small"
+              type="primary"
+              style="margin-top: 8px"
+              @click="selectCourse(c.id)"
+              >选择</n-button
+            >
+          </n-card>
+        </n-grid-item>
+      </n-grid>
+    </n-card>
     <n-el
       type="div"
-      style="display: flex; gap: 12px; margin-bottom: 12px"
+      style="
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 12px;
+      "
     >
       <n-input
         v-model:value="courseId"
@@ -24,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, h } from 'vue';
+import { ref, computed, h, onMounted } from 'vue';
 import { call } from '@api/rpc';
 import { RPC } from '@packages/shared-types';
 import type {
@@ -39,7 +61,11 @@ import {
   useMessage,
   NInputNumber,
   NSpace,
+  NGrid,
+  NGridItem,
+  NCard,
 } from 'naive-ui';
+import { useUserStore } from '@stores/user.store';
 
 const message = useMessage();
 const courseId = ref('');
@@ -48,6 +74,8 @@ const pageSize = ref(10);
 const total = ref(0);
 const rows = ref<any[]>([]);
 const saving = ref<Record<string, boolean>>({});
+const userStore = useUserStore();
+const myCourses = ref<any[]>([]);
 
 const pagination = computed(() => ({
   page: page.value,
@@ -100,6 +128,24 @@ async function loadList(showMsg = false) {
     );
   }
 }
+
+async function loadMyCourses() {
+  try {
+    const res: any = await call(RPC.Course.ListByTeacher, {
+      teacher_id: userStore.user?.id,
+      page: 1,
+      page_size: 100,
+    });
+    myCourses.value = res?.data || [];
+  } catch {}
+}
+
+function selectCourse(id: string) {
+  courseId.value = id;
+  loadList(true);
+}
+
+onMounted(loadMyCourses);
 
 async function saveRow(row: any) {
   if (
