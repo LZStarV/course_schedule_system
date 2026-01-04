@@ -197,12 +197,27 @@ export class BulkSeedService {
             }
           );
         }
-        const [urow]: any = await sequelize.query(
-          `SELECT id FROM users WHERE username=:username`,
-          { replacements: { username } }
+        let uid: string | null = null;
+        const [uByEmail]: any = await sequelize.query(
+          `SELECT id FROM users WHERE email=:email`,
+          { replacements: { email } }
         );
-        const uid = urow?.[0]?.id ?? id;
-        teacherIdsByDept[deptId].push(uid);
+        uid = uByEmail?.[0]?.id ?? null;
+        if (!uid) {
+          const [uByName]: any = await sequelize.query(
+            `SELECT id FROM users WHERE username=:username`,
+            { replacements: { username } }
+          );
+          uid = uByName?.[0]?.id ?? null;
+        }
+        if (uid) {
+          teacherIdsByDept[deptId].push(uid);
+        } else {
+          this.log.error(
+            { username, email },
+            'Teacher not resolved to id'
+          );
+        }
         doneTeachers++;
         this.reporter!.update(
           'teachers',
@@ -243,12 +258,27 @@ export class BulkSeedService {
             }
           );
         }
-        const [srow]: any = await sequelize.query(
-          `SELECT id FROM users WHERE username=:username`,
-          { replacements: { username } }
+        let sid: string | null = null;
+        const [sByEmail]: any = await sequelize.query(
+          `SELECT id FROM users WHERE email=:email`,
+          { replacements: { email } }
         );
-        const sid = srow?.[0]?.id ?? id;
-        studentIdsByDept[deptId].push(sid);
+        sid = sByEmail?.[0]?.id ?? null;
+        if (!sid) {
+          const [sByName]: any = await sequelize.query(
+            `SELECT id FROM users WHERE username=:username`,
+            { replacements: { username } }
+          );
+          sid = sByName?.[0]?.id ?? null;
+        }
+        if (sid) {
+          studentIdsByDept[deptId].push(sid);
+        } else {
+          this.log.error(
+            { username, email },
+            'Student not resolved to id'
+          );
+        }
         doneStudents++;
         this.reporter!.update(
           'students',
@@ -552,14 +582,20 @@ export class BulkSeedService {
               }
             );
           } catch (e: any) {
-            // eslint-disable-next-line no-console
-            console.error('Insert enrollment failed', {
-              sid,
-              cid,
-              year: meta.year,
-              sem: meta.sem,
-              err: e?.message || String(e),
-            });
+            const msg = e?.message || String(e);
+            this.log.error(
+              {
+                sid,
+                cid,
+                year: meta.year,
+                sem: meta.sem,
+                err: msg,
+              },
+              'Insert enrollment failed'
+            );
+            if (msg.includes('enrollments_student_fk')) {
+              throw new Error(msg);
+            }
           }
           done++;
           this.reporter!.update('enrollments', done, total);
