@@ -19,6 +19,7 @@
           <n-form-item>
             <n-button
               type="primary"
+              :keyboard="true"
               :loading="loading"
               @click="onLogin"
               >登录</n-button

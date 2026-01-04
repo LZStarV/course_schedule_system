@@ -33,12 +33,23 @@
         >刷新列表</n-button
       >
     </n-el>
-    <n-data-table :columns="columns" :data="rows" />
+    <n-data-table
+      :columns="columns"
+      :data="rows"
+      :pagination="pagination"
+      :remote="true"
+    />
   </n-el>
 </template>
 
 <script setup lang="ts">
-import { ref, h, onMounted, onBeforeUnmount } from 'vue';
+import {
+  ref,
+  h,
+  onMounted,
+  onBeforeUnmount,
+  computed,
+} from 'vue';
 import { call } from '@api/rpc';
 import { RPC } from '@packages/shared-types';
 import {
@@ -57,6 +68,31 @@ const searchResults = ref<any[]>([]);
 const rows = ref<any[]>([]);
 const isSearching = ref(false);
 let searchTimer: number | null = null;
+const total = ref(0);
+const page = ref(1);
+const pageSize = ref(50);
+
+const pagination = computed(() => ({
+  page: page.value,
+  pageSize: pageSize.value,
+  pageCount: Math.max(
+    1,
+    Math.ceil(total.value / pageSize.value)
+  ),
+  itemCount: total.value,
+  prefix({ itemCount }) {
+    return `总共 ${itemCount} 条 `;
+  },
+  onUpdatePage: async (p: number) => {
+    page.value = p;
+    await loadFavorites(false);
+  },
+  onUpdatePageSize: async (ps: number) => {
+    pageSize.value = ps;
+    page.value = 1;
+    await loadFavorites(false);
+  },
+}));
 
 async function loadFavorites(showMsg = false) {
   const loadingMsg = message.loading('加载中...', {
@@ -66,8 +102,12 @@ async function loadFavorites(showMsg = false) {
     const res = await call<{
       data: any[];
       pagination: any;
-    }>(RPC.Favorites.List, { page: 1, page_size: 50 });
+    }>(RPC.Favorites.List, {
+      page: page.value,
+      page_size: pageSize.value,
+    });
     rows.value = res.data || [];
+    total.value = res.pagination?.total || 0;
     loadingMsg.destroy();
     if (showMsg) message.success('已刷新');
   } catch (err: any) {

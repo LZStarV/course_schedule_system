@@ -146,7 +146,10 @@ const pagination = computed(() => ({
     1,
     Math.ceil(total.value / pageSize.value)
   ),
-  pageSizeOptions: [10, 20, 50],
+  itemCount: total.value,
+  prefix({ itemCount }) {
+    return `总共 ${itemCount} 条 `;
+  },
   onUpdatePage: async (p: number) => {
     page.value = p;
     await fetchUsers();
@@ -159,6 +162,10 @@ const pagination = computed(() => ({
 }));
 function openCreate() {
   editing.value = null;
+  showForm.value = true;
+}
+function openEdit(user: any) {
+  editing.value = user;
   showForm.value = true;
 }
 function onSubmit(payload: any) {
