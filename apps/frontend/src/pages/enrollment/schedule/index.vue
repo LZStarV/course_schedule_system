@@ -23,34 +23,15 @@
     <n-data-table
       :columns="columns"
       :data="rows"
-      :pagination="false"
+      :pagination="pagination"
+      :remote="true"
     />
-    <div class="pagination-container">
-      <n-pagination
-        v-model:page="page"
-        v-model:page-size="pageSize"
-        :page-count="Math.ceil(total / pageSize)"
-        :page-sizes="[10, 20, 50]"
-        :total="total"
-        show-size-picker
-        show-quick-jumper
-        show-total
-        @update:page="onPageChange"
-        @update:page-size="onPageSizeChange"
-      />
-    </div>
   </n-el>
 </template>
 
 <script setup lang="ts">
-import { ref, h } from 'vue';
-import {
-  NInput,
-  NButton,
-  NDataTable,
-  NEl,
-  NPagination,
-} from 'naive-ui';
+import { ref, h, computed } from 'vue';
+import { NInput, NButton, NDataTable, NEl } from 'naive-ui';
 import { call } from '@api/rpc';
 import { RPC } from '@packages/shared-types';
 
@@ -62,6 +43,29 @@ const filters = ref<{
   academic_year?: string;
   semester?: string;
 }>({});
+
+const pagination = computed(() => ({
+  page: page.value,
+  pageSize: pageSize.value,
+  pageCount: Math.max(
+    1,
+    Math.ceil(total.value / pageSize.value)
+  ),
+  itemCount: total.value,
+  prefix({ itemCount }) {
+    return `总共 ${itemCount} 条 `;
+  },
+  onUpdatePage: async (p: number) => {
+    page.value = p;
+    await fetchMySchedule(false);
+  },
+  onUpdatePageSize: async (ps: number) => {
+    pageSize.value = ps;
+    page.value = 1;
+    await fetchMySchedule(false);
+  },
+}));
+
 const columns = [
   {
     title: '课程名称',
@@ -126,25 +130,5 @@ function viewDetail(row: any) {
   });
 }
 
-function onPageChange(p: number) {
-  page.value = p;
-  fetchMySchedule();
-}
-
-function onPageSizeChange(ps: number) {
-  pageSize.value = ps;
-  page.value = 1;
-  fetchMySchedule();
-}
-
 fetchMySchedule();
 </script>
-
-<style scoped>
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
-  padding: 16px;
-}
-</style>

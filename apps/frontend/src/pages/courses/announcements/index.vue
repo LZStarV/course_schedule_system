@@ -16,7 +16,12 @@
         >新建公告</n-button
       >
     </n-el>
-    <n-data-table :columns="columns" :data="rows" />
+    <n-data-table
+      :columns="columns"
+      :data="rows"
+      :pagination="pagination"
+      :remote="true"
+    />
 
     <n-modal
       v-model:show="createVisible"
@@ -57,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, h } from 'vue';
+import { ref, h, computed } from 'vue';
 import { call } from '@api/rpc';
 import { RPC } from '@packages/shared-types';
 import {
@@ -75,6 +80,9 @@ import {
 const message = useMessage();
 const courseId = ref('');
 const rows = ref<any[]>([]);
+const total = ref(0);
+const page = ref(1);
+const pageSize = ref(50);
 const createVisible = ref(false);
 const creating = ref(false);
 const createForm = ref<{
@@ -82,6 +90,28 @@ const createForm = ref<{
   content: string;
   category?: string;
 }>({ title: '', content: '', category: '' });
+
+const pagination = computed(() => ({
+  page: page.value,
+  pageSize: pageSize.value,
+  pageCount: Math.max(
+    1,
+    Math.ceil(total.value / pageSize.value)
+  ),
+  itemCount: total.value,
+  prefix({ itemCount }) {
+    return `总共 ${itemCount} 条 `;
+  },
+  onUpdatePage: async (p: number) => {
+    page.value = p;
+    await loadList(false);
+  },
+  onUpdatePageSize: async (ps: number) => {
+    pageSize.value = ps;
+    page.value = 1;
+    await loadList(false);
+  },
+}));
 
 async function loadList(showMsg = false) {
   if (!courseId.value) {
@@ -97,10 +127,11 @@ async function loadList(showMsg = false) {
       pagination: any;
     }>(RPC.Announcements.GetList, {
       course_id: courseId.value,
-      page: 1,
-      page_size: 50,
+      page: page.value,
+      page_size: pageSize.value,
     });
     rows.value = res.data || [];
+    total.value = res.pagination?.total || 0;
     loadingMsg.destroy();
     if (showMsg) message.success('公告已加载');
   } catch (err: any) {
