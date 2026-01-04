@@ -1,7 +1,10 @@
 <template>
-  <div>
+  <n-el type="div">
     <n-layout>
-      <n-layout-header style="height: 64px" bordered>
+      <n-layout-header
+        style="height: 64px; overflow: hidden"
+        bordered
+      >
         <HeaderBar />
       </n-layout-header>
     </n-layout>
@@ -27,7 +30,7 @@
         <router-view />
       </n-layout-content>
     </n-layout>
-  </div>
+  </n-el>
 </template>
 
 <script setup lang="ts">
@@ -39,6 +42,7 @@ import {
   NLayoutHeader,
   NLayoutSider,
   NLayoutContent,
+  NEl,
 } from 'naive-ui';
 
 const isCollapsed = ref(false);

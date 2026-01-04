@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CourseFavorite } from '../../models/course-favorite.model';
+import { Course } from '../../models/course.model';
 
 @Injectable()
 export class FavoritesService {
@@ -50,12 +51,21 @@ export class FavoritesService {
         },
       };
     }
+    // 使用sequelize的include选项关联课程表
     const { rows, count } =
       await this.cfModel.findAndCountAll({
         where: { user_id } as any,
         offset,
         limit: page_size,
         order: [['created_at', 'DESC']],
+        // 关联课程表，获取课程名称等信息
+        include: [
+          {
+            model: Course,
+            as: 'course',
+            attributes: ['id', 'name', 'course_code'],
+          },
+        ],
       });
     return {
       data: rows as any[],
